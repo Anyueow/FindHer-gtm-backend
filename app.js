@@ -23,6 +23,9 @@ const middleware = (req, res, next) => {
     next();
 }
 
+app.use(express.json());
+app.use(require("./routes/userRoutes"));
+
 
 app.get("/", (req, res) => {
     res.send("Ugh buck buck bitch");
@@ -46,7 +49,7 @@ app.get("/signup", (req, res) => {
 })
 
 
-const port = 0; // Let the OS assign an available port
+const port = 3003; // Let the OS assign an available port
 const server = app.listen(port, () => {
     console.log(`Server is running on http://localhost:${server.address().port}`);
 });
