@@ -15,51 +15,56 @@ const reviewSchema = new Schema({
                                         type: String,
                                         required: true
                                     },
+                                    companyOffice: {
+                                        type: String,
+                                        required: true
+                                    },
+
                                     positionTitle: {
                                         type: String,
                                         required: true
                                     },
                                     startDate: {
-                                        type: Date,
+                                        type: String,
                                         required: true
                                     },
                                     endDate: {
-                                        type: Date,
+                                        type: String,
                                         required: true
                                     },
                                     ratings: {
                                         flexibility: {
                                             type: Number,
-                                            required: true
+
                                         },
                                         management: {
                                             type: Number,
-                                            required: true
+
                                         },
                                         coworkers: {
                                             type: Number,
-                                            required: true
+
                                         },
                                         diversity: {
                                             type: Number,
-                                            required: true
+
                                         },
                                         safety: {
                                             type: Number,
-                                            required: true
+
                                         },
                                         compensation: {
                                             type: Number,
-                                            required: true
+
                                         }
                                     },
                                     goodThings: {
                                         type: String,
-                                        required: true
+
                                     },
                                     badThings: {
                                         type: String,
-                                        required: true
+
                                     },
                                     amenities: {
                                         type: String

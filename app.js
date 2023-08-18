@@ -2,7 +2,10 @@ const dotenv = require("dotenv")
 const mongoose = require('mongoose');
 const express = require('express');
 const cors = require("cors");
+const authenticateJWT = require('./middleware/auth');
+
 const app= express();
+
 
 
 dotenv.config({ path: "./config.env"});
@@ -25,9 +28,14 @@ app.use(cors(corsOptions));
 
 // Other middleware
 app.use(express.json());
+app.use('/protectedRoute', authenticateJWT);
 
 // Routes
 app.use(require("./routes/userRoutes"));
+// Routes
+
+app.use(require("./routes/reviewRoutes"));
+
 
 
 
