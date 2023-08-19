@@ -23,6 +23,8 @@ mongoose.connect(DB, {
 
 const corsOptions = {
     origin: 'https://findher.work',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: ['Content-Type', 'Authorization']
 };
 app.use(cors(corsOptions));
 
