@@ -20,7 +20,7 @@ mongoose.connect(DB, {
 }).catch((err) => console.log(err));
 
 
-// Set up CORS middleware
+
 const corsOptions = {
     origin: 'https://findher.work',
 };
@@ -61,9 +61,10 @@ app.get("/signup", (req, res) => {
 })
 
 
-const port = 3000; // Let the OS assign an available port
-const server = app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${server.address().port}`);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });
 
 
