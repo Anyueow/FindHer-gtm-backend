@@ -11,22 +11,31 @@ const app= express();
 dotenv.config({ path: "./config.env"});
 const DB= process.env.DATABASE;
 mongoose.connect(DB, {
-    useNewURLParser: true,
+    useNewUrlParser: true, // Correct this
     useUnifiedTopology: true
-
 }).then(() => {
-
     console.log("Connection success!");
 }).catch((err) => console.log(err));
+
 
 
 
 const corsOptions = {
     origin: 'https://findher.work',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    preflightContinue: false  // Add this line
 };
+
 app.use(cors(corsOptions));
+
+app.options('*', (req, res) => {
+    res.header('Access-Control-Allow-Origin', 'https://findher.work');
+    res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.send(200);
+});
+
 
 // Other middleware
 app.use(express.json());
