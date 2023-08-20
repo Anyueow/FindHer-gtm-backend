@@ -21,7 +21,7 @@ mongoose.connect(DB, {
 
 
 const corsOptions = {
-    origin: 'http://localhost:3003/',
+    origin: 'http://localhost:3003',
     credentials: true, // Include this line
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -31,7 +31,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.options('*', (req, res) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost:3003/');
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3003');
     res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.send(200);
