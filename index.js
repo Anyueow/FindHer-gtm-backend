@@ -51,7 +51,7 @@ app.use(express.json());
 app.use('/protectedRoute', authenticateJWT);
 
 app.get("/", (req, res) => {
-    res.send("Ugh buck buck bitch");
+    res.send("Welcome to my funeral");
 })
 
 app.get("/about", (req, res) => {
