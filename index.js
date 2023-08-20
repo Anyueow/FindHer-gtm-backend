@@ -22,6 +22,7 @@ mongoose.connect(DB, {
 
 const corsOptions = {
     origin: 'https://findher.work',
+    credentials: true, // Include this line
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: ['Content-Type', 'Authorization'],
     preflightContinue: false  // Add this line
@@ -36,19 +37,18 @@ app.options('*', (req, res) => {
     res.send(200);
 });
 
+app.options('*', cors(corsOptions));
+// Enable preflight for all routes
+
+
+
+// routes
+app.use(require("./routes/userRoutes"));
+app.use(require("./routes/reviewRoutes"));
 
 // Other middleware
 app.use(express.json());
 app.use('/protectedRoute', authenticateJWT);
-
-// Routes
-app.use(require("./routes/userRoutes"));
-// Routes
-
-app.use(require("./routes/reviewRoutes"));
-
-
-
 
 app.get("/", (req, res) => {
     res.send("Ugh buck buck bitch");
