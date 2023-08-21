@@ -59,7 +59,7 @@ app.use('/protectedRoute', authenticateJWT);
 app.get("/", (req, res) => {
     const protocol = req.protocol; // Will be 'http' or 'https'
     console.log('Protocol:', protocol);
-    res.send("Welcome to my funeral Auto Auto ");
+    res.send("Welcome to my funeral Auto Auto " + protocol);
 })
 
 app.get("/about", (req, res) => {
