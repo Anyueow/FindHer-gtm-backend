@@ -14,8 +14,10 @@ mongoose.connect(DB, {
     useNewUrlParser: true, // Correct this
     useUnifiedTopology: true
 }).then(() => {
-    console.log("Connection success!");
+    console.log("Connection to DB success!");
 }).catch((err) => console.log(err));
+
+
 
 
 
@@ -55,6 +57,8 @@ app.use(express.json());
 app.use('/protectedRoute', authenticateJWT);
 
 app.get("/", (req, res) => {
+    const protocol = req.protocol; // Will be 'http' or 'https'
+    console.log('Protocol:', protocol);
     res.send("Welcome to my funeral Auto Auto ");
 })
 
@@ -79,8 +83,7 @@ app.get("/signup", (req, res) => {
 console.log("work u whore");
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is running on http://0.0.0.0:${PORT}`);
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
-
 
