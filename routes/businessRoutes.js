@@ -1,33 +1,36 @@
 const express = require("express");
+const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const Business = require("../models/business");
 const router = express.Router();
-
-const app = express();
+router.use(express.json());
+// const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
 
-mongoose.connect("mongodb://localhost:27017/businessDB", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+// mongoose.connect("mongodb://localhost:27017/businessDB", {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// });
 
-app.post("/business/register", async (req, res) => {
+router.post("/business/register", async (req, res) => {
   try {
-    const { name, location } = req.body;
-
-    if (!name || !location || !location.zipCode) {
+    const { name, location ,industry,summary} = req.body;
+    console.log(req.body,"gg");
+    if (!name || !industry || !summary || !location || !location.zipCode ) {
       return res.status(400).json({
         status: "error",
         message: "Business name and zip code are required.",
       });
     }
-
+    
     const newBusiness = new Business({
       name: name,
       locations: [location],
+      industry:industry,
+      summary: summary
     });
 
     await newBusiness.save();
@@ -157,7 +160,7 @@ router.put("/business/update-details/:businessId", async (req, res) => {
 });
 
 // New route to update amenities, certificates, programs, and notes
-app.put(
+router.put(
   "/business/update-extras/:businessId/:locationIndex",
   async (req, res) => {
     const businessId = req.params.businessId;
