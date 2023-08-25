@@ -23,7 +23,7 @@ mongoose.connect(DB, {
 
 
 const corsOptions = {
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'https://findher.work'],
     credentials: true, // Include this line
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: ['Content-Type', 'Authorization'],
