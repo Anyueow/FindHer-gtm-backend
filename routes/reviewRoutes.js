@@ -8,9 +8,26 @@ router.post(
   "/protectedRoute/createReview",
   authenticateJWT,
   async (req, res) => {
-    const { companyName, companyOffice, positionTitle, startDate, endDate } =
-      req.body;
-
+    const {
+      companyName,
+      industry,
+      positionTitle,
+      startDate,
+      endDate,
+      department,
+      companyOffice,
+      employementStatus,
+      currworking,
+    } = req.body;
+    console.log(companyName,
+      industry,
+      positionTitle,
+      startDate,
+      endDate,
+      department,
+      companyOffice,
+      employementStatus,
+      currworking,);
     const userId = req.user.id; // Corrected line
 
     // Check if the user has filled out the required fields
@@ -19,7 +36,11 @@ router.post(
       !companyOffice ||
       !positionTitle ||
       !startDate ||
-      !endDate
+      // !endDate ||
+      // !currworking ||
+      !employementStatus ||
+      !department ||
+      !industry
     ) {
       return res
         .status(400)
@@ -29,10 +50,14 @@ router.post(
     try {
       const initialReview = new Review({
         companyName,
-        companyOffice,
+        industry,
         positionTitle,
         startDate,
         endDate,
+        department,
+        companyOffice,
+        employementStatus,
+        currworking,
         user: userId, // Include user field in the Review object
       });
 
@@ -40,12 +65,10 @@ router.post(
 
       if (savedReview) {
         // Return success message and review ID
-        res
-          .status(201)
-          .json({
-            message: "Review successfully created.",
-            reviewId: savedReview._id,
-          });
+        res.status(201).json({
+          message: "Review successfully created.",
+          reviewId: savedReview._id,
+        });
       } else {
         res.status(500).json({ message: "Internal server error." });
       }
@@ -78,12 +101,10 @@ router.post("/updateRatings", authenticateJWT, async (req, res) => {
     );
 
     if (updatedReview) {
-      res
-        .status(200)
-        .json({
-          message: "Ratings updated successfully.",
-          review: updatedReview,
-        });
+      res.status(200).json({
+        message: "Ratings updated successfully.",
+        review: updatedReview,
+      });
     } else {
       res.status(400).json({ message: "Review not found." });
     }
@@ -95,7 +116,7 @@ router.post("/updateRatings", authenticateJWT, async (req, res) => {
 
 // Update the review with the additional fields:
 router.post("/updateReviewDetails", authenticateJWT, async (req, res) => {
-  const { reviewId, goodThings, badThings, amenities, benefits } = req.body;
+  const { reviewId, questionOne, questionTwo} = req.body;
 
   const user = req.user.id;
 
@@ -104,22 +125,20 @@ router.post("/updateReviewDetails", authenticateJWT, async (req, res) => {
       { _id: reviewId, user: user },
       {
         $set: {
-          goodThings: goodThings,
-          badThings: badThings,
-          amenities: amenities,
-          benefits: benefits,
+          'question1.question': questionOne.question,
+          'question1.answer': questionOne.answer,
+          'question2.question': questionTwo.question,
+          'question2.answer': questionTwo.answer,
         },
       },
       { new: true }
     );
 
     if (updatedReview) {
-      res
-        .status(200)
-        .json({
-          message: "Review details updated successfully.",
-          review: updatedReview,
-        });
+      res.status(200).json({
+        message: "Review details updated successfully.",
+        review: updatedReview,
+      });
     } else {
       res.status(400).json({ message: "Review not found." });
     }

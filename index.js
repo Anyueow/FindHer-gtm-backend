@@ -23,7 +23,7 @@ mongoose.connect(DB, {
 
 
 const corsOptions = {
-    origin: ['http://localhost:5000', 'https://findher.work'],
+    origin: ['http://localhost:3000', 'https://findher.work'],
     credentials: true, // Include this line
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -34,6 +34,7 @@ app.use(cors(corsOptions));
 // app.use(cors());
 // app.options('*', cors(corsOptions));
 // Enable preflight for all routes
+
 
 
 
