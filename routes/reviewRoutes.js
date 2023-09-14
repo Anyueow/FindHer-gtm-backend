@@ -147,5 +147,36 @@ router.post("/updateReviewDetails", authenticateJWT, async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 });
+router.post("/updateFeatures", authenticateJWT, async (req, res) => {
+  const { reviewId, features} = req.body;
+
+  const user = req.user.id;
+
+  try {
+    const updatedReview = await Review.findOneAndUpdate(
+      { _id: reviewId, user: user },
+      {
+        $set: {
+          'features.firstOne': features.firstOne,
+          'features.setTwo': features.setTwo,
+        },
+      },
+      { new: true }
+    );
+
+    if (updatedReview) {
+      res.status(200).json({
+        message: "Review details updated successfully.",
+        review: updatedReview,
+      });
+      // console.log(features);
+    } else {
+      res.status(400).json({ message: "Review not found." });
+    }
+  } catch (error) {
+    console.error("Error occurred:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+});
 
 module.exports = router;
