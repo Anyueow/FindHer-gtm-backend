@@ -48,6 +48,14 @@ const reviewSchema = new Schema({
     type: Boolean,
     required: true,
   },
+  features: {
+    firstOne: {
+      type: [String],
+    },
+    setTwo: {
+      type: [String],
+    },
+  },
   ratings: {
     flexibility: {
       type: Number,
@@ -69,25 +77,25 @@ const reviewSchema = new Schema({
     },
   },
   question1: {
-    question:{
-        type: String,
-        // required: true,
+    question: {
+      type: String,
+      // required: true,
     },
-    answer:{
-        type: String,
-        // required: true,
+    answer: {
+      type: String,
+      // required: true,
     },
   },
   question2: {
-    question:{
-        type: String,
-        // required: true,
+    question: {
+      type: String,
+      // required: true,
     },
-    answer:{
-        type: String,
-        // required: true,
+    answer: {
+      type: String,
+      // required: true,
     },
-  }
+  },
 });
 
 const Review = mongoose.model("Review", reviewSchema);
