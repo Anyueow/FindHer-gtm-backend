@@ -1,8 +1,27 @@
 const express = require("express");
 const router = express.Router();
 const Review = require("../models/reviews");
+const department = require("../models/department");
+const jobTitle = require("../models/job_titles");
 const authenticateJWT = require("../middleware/auth");
 router.use(express.json());
+
+async function checkAndInsertJobTitle(item) {
+  try {
+    const existingJobTitle = await jobTitle.findOne({ job_title: item });
+
+    if (!existingJobTitle){
+      const newJobTitle = new jobTitle({ job_title: item });
+      await newJobTitle.save();
+      console.log('Job title inserted:', item);
+      return newJobTitle;
+    }
+  } catch (error) {
+    console.error('Error checking and inserting job title:', error);
+    throw error;
+  }
+}
+// checkAndInsertJobTitle("CTO");
 // POST - Add a new review
 router.post(
   "/protectedRoute/createReview",
@@ -46,7 +65,7 @@ router.post(
         .status(400)
         .json({ message: "Please fill out all required fields." });
     }
-
+    checkAndInsertJobTitle(positionTitle);
     try {
       const initialReview = new Review({
         companyName,
@@ -60,6 +79,8 @@ router.post(
         currworking,
         user: userId, // Include user field in the Review object
       });
+
+
 
       const savedReview = await initialReview.save();
 
@@ -111,6 +132,27 @@ router.post("/updateRatings", authenticateJWT, async (req, res) => {
   } catch (error) {
     console.error("Error occurred:", error);
     res.status(500).json({ message: "Internal server error." });
+  }
+});
+router.get("/jobTitleList", async (req, res) => {
+  console.log("heyoo");
+  // const { ratings, reviewId } = req.body;
+  try {
+    const jobTitles = await jobTitle.find();
+    res.json(jobTitles);
+  } catch (error) {
+    console.error('Error fetching job titles:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+router.get("/getDepartment", async (req, res) => {
+  // const { ratings, reviewId } = req.body;
+  try {
+    const dep = await department.find();
+    res.json(dep);
+  } catch (error) {
+    console.error('Error fetching job titles:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
