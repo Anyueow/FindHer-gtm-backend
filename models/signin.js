@@ -15,6 +15,14 @@ const signinSchema = new Schema({
     type: String,
     required: true,
   },
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
   otp: {
     type: String,
     required: true,
@@ -38,6 +46,7 @@ signinSchema.pre("save", async function (next) {
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
+    console.log(this.password)
     this.otp = await bcrypt.hash(this.otp, salt);
     return next();
   } catch (err) {

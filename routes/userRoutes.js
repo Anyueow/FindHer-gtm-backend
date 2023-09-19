@@ -5,13 +5,14 @@ const SignIn = require("../models/signin");
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const twilio = require("twilio");
+//const twilio = require("twilio");
 const dotenv = require("dotenv");
+const textflow = require("textflow.js");
 
-const client = twilio(
-  process.env.accountSid_twilio,
-  process.env.authToken_twilio
-);
+textflow.useKey(process.env.TextFlow_Key);
+
+const { generateNumericOTP } = require("../controller/otpGenerator");
+
 router.use(express.json());
 
 // POST - Add a new user
@@ -36,6 +37,8 @@ router.post("/register", async (req, res) => {
           email: existingUserPhone.email,
           phoneNumber: existingUserPhone.phoneNumber,
           password: existingUserPhone.password,
+          firstName:existingUserPhone.firstName,
+          lastName:existingUserPhone.lastName,
         });
         const userReg = await newUser.save();
         // Generate JWT token
@@ -63,10 +66,10 @@ router.post("/register", async (req, res) => {
 
 router.post("/verify", async (req, res) => {
   console.log("holaaa", req.body);
-  const { email, phoneNumber, password } = req.body;
+  const { email, phoneNumber, password , firstName, lastName } = req.body;
 
   // Check if the user has filled out everything
-  if (!email || !phoneNumber || !password) {
+  if (!email || !phoneNumber || !password || !firstName || !lastName) {
     return res.status(400).json({ message: "Please fill out all fields." });
   }
 
@@ -83,11 +86,14 @@ router.post("/verify", async (req, res) => {
     }
 
     const otp = generateNumericOTP(6);
+    console.log(otp)
     // Create new signin
     const newSignin = new SignIn({
       email,
       phoneNumber,
       password,
+      firstName,
+      lastName,
       otp,
     });
 
@@ -95,17 +101,16 @@ router.post("/verify", async (req, res) => {
 
     if (signinReg) {
       // Return success message
-      client.messages
-        .create({
-          body: `Your FindHer signin verification code is: ${otp} `, // Your message
-          from: "+19523146358", // Your Twilio phone number
-          to: "+91" + phoneNumber,
-        })
-        .then((message) =>
-          console.log("Message sent. Message SID:", message.sid)
-        )
-        .catch((error) => console.error("Error sending message:", error));
-      res.status(201).json({ message: "Signin successfully registered." });
+      let result = await textflow.sendSMS(`+91${phoneNumber}`, `Your FindHer signin verification code is: ${otp}`);
+      if (result.ok) {
+        console.log("SUCCESS");
+        console.log(result);
+        res.status(201).json({ message: "Signin successfully registered." });
+      }
+      else{
+        console.log(result)
+        console.log("OTP failed");
+      }
     } else {
       console.error("Error occurred:", error);
       res.status(500).json({ message: "Internal server error." });
@@ -157,16 +162,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-function generateNumericOTP(length) {
-  const digits = "0123456789";
-  let otp = "";
 
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * digits.length);
-    otp += digits.charAt(randomIndex);
-  }
-
-  return otp;
-}
 
 module.exports = router;

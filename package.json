@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-      "start": "node index.js"
+    "start": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +19,7 @@
     "mongodb": "^5.7.0",
     "mongoose": "^7.4.3",
     "nodemon": "^3.0.1",
-    "twilio": "^4.16.0"
+    "textflow.js": "^0.1.4"
   },
   "devDependencies": {
     "body-parser": "^1.20.2"
