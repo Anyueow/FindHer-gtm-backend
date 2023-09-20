@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const authenticateJWT = require("../middleware/auth");
 const { generateNumericOTP } = require("../controller/otpGenerator");
+const { sendMail } = require("../controller/SendMail");
 
 const textflow = require("textflow.js");
 
@@ -55,11 +56,18 @@ router.post(
   async (req, res) => {
     console.log("otp request");
     console.log(req.body);
-    const { phoneNumber, email } = req.body;
+    const { phoneNumber } = req.body;
 
-    if (!phoneNumber || !email) {
+    if (!phoneNumber) {
       return res.status(400).json({ message: "Please fill out all fields." });
     }
+
+    const userDetails = await User.findOne({ phoneNumber: phoneNumber });
+
+    if(userDetails){
+      return res.status(400).json({ message: "Phone Number already in use." });
+    }
+
     const otp = generateNumericOTP(6);
     console.log("otp-----",otp);
 
@@ -71,7 +79,6 @@ router.post(
         req.user.id,
         {
           tempPhoneNumber: phoneNumber,
-          tempEmail: email,
           otp: hashedOtp,
         },
         { new: true }
@@ -122,7 +129,7 @@ router.post("/profile/number/change", authenticateJWT, async (req, res) => {
   try {
     await User.findByIdAndUpdate(
       req.user.id,
-      { phoneNumber: userDetails.tempPhoneNumber, email: userDetails.tempEmail, otp: otp },
+      { phoneNumber: userDetails.tempPhoneNumber },
       { new: true } // This option returns the updated document
     );
     res.status(201).json({ message: "Phone Number updated successfully." });
@@ -130,6 +137,136 @@ router.post("/profile/number/change", authenticateJWT, async (req, res) => {
     console.error("Error occurred:", error);
     res.status(500).json({ message: "Internal server error." });
   }
+});
+
+
+router.post(
+  "/profile/email/otp/request",
+  authenticateJWT,
+  async (req, res) => {
+    console.log("otp email request");
+    console.log(req.body);
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Please fill out all fields." });
+    }
+
+    const userDetails = await User.findOne({ email: email });
+
+    if(userDetails){
+      return res.status(400).json({ message: "Email already in use." });
+    }
+
+    const otp = generateNumericOTP(6);
+    console.log("otp-----",otp);
+
+    try {
+      const salt = await bcrypt.genSalt(10);
+      const hashedOtp = await bcrypt.hash(otp, salt);
+      
+      await User.findByIdAndUpdate(
+        req.user.id,
+        {
+          tempEmail: email,
+          otp: hashedOtp,
+        },
+        { new: true }
+      );
+
+      const content = `
+      <h4>Hi there,</h4>
+      <p>Your OTP is: ${otp}</p>
+      <p><b>Regards</b>,</p>
+      <P>FindHer</p>
+    `;
+    
+      let result = await sendMail(email, "Email change request - OTP", content);
+      if (result) {
+        console.log("SUCCESS");
+        console.log(result);
+        res
+        .status(201)
+        .json({ message: "OTP successfully send to your email." });
+      } else {
+        console.log(result);
+        console.log("OTP failed");
+        res
+        .status(400)
+        .json({ message: "OTP failed." });
+      }
+    
+    } catch (error) {
+      console.error("Error occurred:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
+  }
+);
+
+router.post("/profile/email/change", authenticateJWT, async (req, res) => {
+  console.log("change/email");
+  console.log(req.body);
+  const { otp } = req.body;
+
+  if ( !otp) {
+    return res.status(400).json({ message: "Please fill out all fields." });
+  }
+
+  const userDetails = await User.findOne({ _id: req.user.id });
+
+  if (!userDetails || !(await bcrypt.compare(otp, userDetails.otp))
+  ) {
+    return res
+      .status(400)
+      .json({ message: "Invalid otp." });
+  }
+
+  try {
+    await User.findByIdAndUpdate(
+      req.user.id,
+      { email: userDetails.tempEmail },
+      { new: true } // This option returns the updated document
+    );
+    res.status(201).json({ message: "Email updated successfully." });
+  } catch (error) {
+    console.error("Error occurred:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+});
+
+router.post("/profile/work", authenticateJWT, async (req, res) => {
+  console.log("work");
+  console.log(req.body);
+  const { companyName, positionTitle, companyOffice, department } = req.body;
+
+  if ( !companyName || !positionTitle || !companyOffice ||  !department) {
+    return res.status(400).json({ message: "Please fill out all fields." });
+  }
+
+  const userDetails = await User.findOne({ _id: req.user.id });
+if(userDetails){
+  try {
+    let result = await Review.findOneAndUpdate(
+      { user: req.user.id },
+      {
+        companyName: companyName,
+        positionTitle: positionTitle,
+        companyOffice: companyOffice,
+        department: department
+      },
+      { new: true }
+    );
+    console.log(result)
+    res.status(201).json({ message: "Work details updated successfully." });
+  } catch (error) {
+    console.error("Error occurred:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+}
+else{
+  console.log("Invalid user");
+    res.status(500).json({ message: "Invalid user." });
+}
 });
 
 module.exports = router;
