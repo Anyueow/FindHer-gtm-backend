@@ -61,6 +61,7 @@ app.use(require("./routes/userRoutes"));
 app.use(require("./routes/reviewRoutes"));
 app.use(require("./routes/businessRoutes"));
 app.use(require("./routes/NewsLetterRoutes"));
+app.use(require("./routes/profileRoutes"));
 
 // Other middleware
 app.use(express.json());
