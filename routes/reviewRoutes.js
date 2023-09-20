@@ -1,19 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const Review = require("../models/reviews");
-const department = require("../models/department");
+const depart = require("../models/department");
 const jobTitle = require("../models/job_titles");
 const authenticateJWT = require("../middleware/auth");
 router.use(express.json());
 
 async function checkAndInsertJobTitle(item) {
   try {
-    const existingJobTitle = await jobTitle.findOne({ job_title: item });
+    const existingJobTitle = await jobTitle.findOne({ job_title: { $regex: new RegExp(`^${item}$`, 'i') } });
 
     if (!existingJobTitle){
-      const newJobTitle = new jobTitle({ job_title: item });
+      const newItem = item.toLowerCase();
+      const newJobTitle = new jobTitle({ job_title: newItem });
       await newJobTitle.save();
-      console.log('Job title inserted:', item);
+      console.log('Job title inserted:', newItem);
       return newJobTitle;
     }
   } catch (error) {
@@ -21,6 +22,23 @@ async function checkAndInsertJobTitle(item) {
     throw error;
   }
 }
+async function checkAndInsertDepartment(item) {
+  try {
+    const existingDep = await depart.findOne({ department: { $regex: new RegExp(`^${item}$`, 'i') } });
+
+    if (!existingDep){
+      const newItem = item.toLowerCase();
+      const newDep = new depart({ department: newItem });
+      await newDep.save();
+      console.log('Department inserted:', newDep);
+      return newDep;
+    }
+  } catch (error) {
+    console.error('Error checking and inserting Department:', error);
+    throw error;
+  }
+}
+
 // checkAndInsertJobTitle("CTO");
 // POST - Add a new review
 router.post(
@@ -66,6 +84,7 @@ router.post(
         .json({ message: "Please fill out all required fields." });
     }
     checkAndInsertJobTitle(positionTitle);
+    checkAndInsertDepartment(department)
     try {
       const initialReview = new Review({
         companyName,
@@ -134,29 +153,32 @@ router.post("/updateRatings", authenticateJWT, async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 });
-router.get("/jobTitleList", async (req, res) => {
-  console.log("heyoo");
-  // const { ratings, reviewId } = req.body;
-  try {
-    const jobTitles = await jobTitle.find();
-    res.json(jobTitles);
-  } catch (error) {
-    console.error('Error fetching job titles:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-router.get("/getDepartment", async (req, res) => {
-  // const { ratings, reviewId } = req.body;
-  try {
-    const dep = await department.find();
-    res.json(dep);
-  } catch (error) {
-    console.error('Error fetching job titles:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
+router.post('/jobTitleList', async (req, res) => {
+  const {inputTitle} = req.body;
 
-// Update the review with the additional fields:
+  try {
+    const regex = new RegExp(`^${inputTitle}`, 'i'); 
+    const matchingJobTitles = await jobTitle.find({ job_title: { $regex: regex } }).limit(5);;
+
+    res.json({ matchingJobTitles });
+  } catch (error) {
+    console.error('Error handling request:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+router.post('/jobDepList', async (req, res) => {
+  const {inputDep} = req.body;
+
+  try {
+    const regex = new RegExp(`^${inputDep}`, 'i'); 
+    const matchingDep = await depart.find({ department: { $regex: regex } }).limit(5);;
+
+    res.json({ matchingDep });
+  } catch (error) {
+    console.error('Error handling request:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 router.post("/updateReviewDetails", authenticateJWT, async (req, res) => {
   const { reviewId, questionOne, questionTwo} = req.body;
 
