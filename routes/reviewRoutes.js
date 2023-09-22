@@ -55,6 +55,8 @@ router.post(
       companyOffice,
       employementStatus,
       currworking,
+      firstPageTime
+
     } = req.body;
     console.log(companyName,
       industry,
@@ -97,7 +99,12 @@ router.post(
         employementStatus,
         currworking,
         user: userId, // Include user field in the Review object
-      });
+        pageTimings: {
+          firstPageTime: firstPageTime,
+        },
+      }
+      // { $set: { 'pageTimings.firstPageTime': firstPageTime } }
+      );
 
 
 
@@ -120,12 +127,13 @@ router.post(
 );
 
 const mongoose = require("mongoose");
+const User = require("../models/user");
 
 // ...
 
 // Your route handler
 router.post("/updateRatings", authenticateJWT, async (req, res) => {
-  const { ratings, reviewId } = req.body;
+  const { ratings, reviewId,secondPageTime } = req.body;
   const user = req.user.id;
 
   // Validate reviewId
@@ -136,7 +144,7 @@ router.post("/updateRatings", authenticateJWT, async (req, res) => {
   try {
     const updatedReview = await Review.findOneAndUpdate(
       { _id: reviewId, user: user },
-      { $set: { ratings: ratings } },
+      { $set: { ratings: ratings, 'pageTimings.secondPageTime': secondPageTime }, },
       { new: true }
     );
 
@@ -179,8 +187,99 @@ router.post('/jobDepList', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+// route to get all the reviews
+router.get('/getReviews', async (req, res) => {
+  const {user} = req.body;
+
+  try {
+    const userReviews = await Review.find({ user: user });
+
+    if(userReviews){
+      res.json({ userReviews });
+    }
+    else{
+      res.status(500).json({ message: 'No Review found!' });
+    }
+
+  } catch (error) {
+    console.error('Error handling request:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+// route to increase/decrease count of likes
+router.post('/reviewLike', async (req, res) => {
+  const {reviewId,increase} = req.body; // increase = false : review disliked
+
+  try {
+    const review = await Review.findById(reviewId);
+
+    if (!review) {
+      return res.status(404).json({ message: 'Review not found' });
+    }
+    increase ? review.engagement.likes += 1 : review.engagement.likes -= 1 ;
+
+    const updatedReview = await review.save();
+
+    res.status(200).json({ message: 'Review like count increased', review: updatedReview });
+  } catch (error) {
+    console.error('Error occurred:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+// route to increase/decrease count of review saved
+router.post('/reviewSave', async (req, res) => {
+  const {reviewId,saved} = req.body; // saved = false : review unsaved hence decrement with one
+
+  try {
+    const review = await Review.findById(reviewId);
+
+    if (!review) {
+      return res.status(404).json({ message: 'Review not found' });
+    }
+    saved ? review.engagement.saveCount += 1 : review.engagement.saveCount -= 1 ;
+
+    const updatedReview = await review.save();
+
+    res.status(200).json({ message: 'Review Save count increased', review: updatedReview });
+  } catch (error) {
+    console.error('Error occurred:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+// route to save saved-review id's to user's database
+router.post('/userSavedReview', async (req, res) => {
+  const {reviewId,saved} = req.body; // saved = false : review unsaved hence decrement with one
+  const user = req.user.id;
+
+  try {
+    const user = await User.findById(user);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (saved) {
+      if (!user.reviewSaved.includes(reviewId)) {
+        user.reviewSaved.push(reviewId);
+      }
+    } else {
+      const index = user.reviewSaved.indexOf(reviewId);
+      if (index !== -1) {
+        user.reviewSaved.splice(index, 1);
+      }
+    }
+
+    // Save the updated user
+    const updatedUser = await user.save();
+
+    res.status(200).json({ message: 'Review saved for user', user: updatedUser });
+  } catch (error) {
+    console.error('Error occurred:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 router.post("/updateReviewDetails", authenticateJWT, async (req, res) => {
-  const { reviewId, questionOne, questionTwo} = req.body;
+  const { reviewId, questionOne, questionTwo,thirdPageTime} = req.body;
 
   const user = req.user.id;
 
@@ -193,6 +292,7 @@ router.post("/updateReviewDetails", authenticateJWT, async (req, res) => {
           'question1.answer': questionOne.answer,
           'question2.question': questionTwo.question,
           'question2.answer': questionTwo.answer,
+          'pageTimings.thirdPageTime': thirdPageTime
         },
       },
       { new: true }
@@ -212,7 +312,7 @@ router.post("/updateReviewDetails", authenticateJWT, async (req, res) => {
   }
 });
 router.post("/updateFeatures", authenticateJWT, async (req, res) => {
-  const { reviewId, features} = req.body;
+  const { reviewId, features,fourthPageTime} = req.body;
 
   const user = req.user.id;
 
@@ -223,6 +323,7 @@ router.post("/updateFeatures", authenticateJWT, async (req, res) => {
         $set: {
           'features.firstOne': features.firstOne,
           'features.setTwo': features.setTwo,
+          'pageTimings.fourthPageTime': fourthPageTime
         },
       },
       { new: true }

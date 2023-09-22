@@ -96,6 +96,30 @@ const reviewSchema = new Schema({
       // required: true,
     },
   },
+  pageTimings: {
+    firstPageTime: {
+      type: String,
+    },
+    secondPageTime: {
+      type: String,
+    },
+    thirdPageTime: {
+      type: String,
+    },
+    fourthPageTime: {
+      type: String,
+    },
+  },
+  engagement: {
+    likes: {
+      type: Number,
+      default: 0,
+    },
+    saveCount: {
+      type: Number,
+      default: 0,
+    },
+  },
 });
 
 const Review = mongoose.model("Review", reviewSchema);

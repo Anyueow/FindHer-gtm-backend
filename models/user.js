@@ -25,6 +25,10 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  reviewSaved:{
+    type:[String],
+    default:[]
+  },
   otp: {
     type: String,
   },
