@@ -268,16 +268,20 @@ else{
     res.status(500).json({ message: "Invalid user." });
 }
 });
-router.get('/profile/notifications', async (req, res) => {
+router.get('/profile/notifications',authenticateJWT, async (req, res) => {
   const userId = req.user.id;
-  console.log("hello",userId);
+  // console.log("hello",userId);
   try {
 
     const reviews = await Review.find({
       user: userId,
       $or: [
-        { 'engagement.likes': { $gt: 'engagement.pastlike' } }, 
-        { 'engagement.saveCount': { $gt: 'engagement.pastsavecount' } }, 
+        {
+          $expr: { $gt: ['$engagement.likes', '$engagement.pastlike'] },
+        },
+        {
+          $expr: { $gt: ['$engagement.saveCount', '$engagement.pastsavecount'] },
+        },
       ],
     });
 
@@ -309,7 +313,7 @@ router.get('/profile/notifications', async (req, res) => {
     }, 0);
     const responseData = {
       notifCount,
-      otherDetails,
+      notifications,
     };
     res.json(responseData);
   } catch (err) {
