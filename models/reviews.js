@@ -120,6 +120,9 @@ const reviewSchema = new Schema({
       default: 0,
     },
   },
+  addInfo:{
+    type:String,
+  }
 });
 
 const Review = mongoose.model("Review", reviewSchema);

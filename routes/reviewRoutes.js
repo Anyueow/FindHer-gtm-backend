@@ -312,13 +312,13 @@ router.post("/updateReviewDetails", authenticateJWT, async (req, res) => {
   }
 });
 router.post("/updateFeatures", authenticateJWT, async (req, res) => {
-  const { reviewId, features,fourthPageTime} = req.body;
+  const { reviewId, features,fourthPageTime,addInfo} = req.body;
 
   const user = req.user.id;
 
   try {
     const updatedReview = await Review.findOneAndUpdate(
-      { _id: reviewId, user: user },
+      { _id: reviewId, user: user , addInfo:addInfo},
       {
         $set: {
           'features.firstOne': features.firstOne,
