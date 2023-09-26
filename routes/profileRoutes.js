@@ -268,5 +268,53 @@ else{
     res.status(500).json({ message: "Invalid user." });
 }
 });
+router.get('/profile/notifications', async (req, res) => {
+  const userId = req.user.id;
+  console.log("hello",userId);
+  try {
 
+    const reviews = await Review.find({
+      user: userId,
+      $or: [
+        { 'engagement.likes': { $gt: 'engagement.pastlike' } }, 
+        { 'engagement.saveCount': { $gt: 'engagement.pastsavecount' } }, 
+      ],
+    });
+
+    const notifications = [];
+
+    reviews.forEach((review) => {
+      const { _id, engagement } = review;
+
+      const newLikes = engagement.likes - engagement.pastlike;
+      review.engagement.pastlike = engagement.likes;
+
+      const newSaveCount = engagement.saveCount - engagement.pastsavecount;
+      review.engagement.pastsavecount = engagement.saveCount;
+
+      review.save();
+
+      if (newLikes > 0 || newSaveCount > 0) {
+        notifications.push({
+          reviewId: _id,
+          newLikes,
+          newSaveCount,
+        });
+      }
+    });
+    const notifCount = reviews.reduce((total, review) => {
+      const newLikes = review.engagement.likes - review.engagement.pastlike;
+      const newSaveCount = review.engagement.saveCount - review.engagement.pastsavecount;
+      return total + newLikes + newSaveCount;
+    }, 0);
+    const responseData = {
+      notifCount,
+      otherDetails,
+    };
+    res.json(responseData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 module.exports = router;

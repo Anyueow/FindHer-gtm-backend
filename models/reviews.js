@@ -119,6 +119,14 @@ const reviewSchema = new Schema({
       type: Number,
       default: 0,
     },
+    pastlike:{
+      type: Number,
+      default: 0,
+    },
+    pastsavecount:{
+      type: Number,
+      default: 0,
+    }
   },
   addInfo:{
     type:String,
