@@ -286,7 +286,7 @@ router.get('/profile/notifications',authenticateJWT, async (req, res) => {
     });
 
     const notifications = [];
-
+    let notifCount=0;
     reviews.forEach((review) => {
       const { _id, engagement } = review;
 
@@ -297,7 +297,7 @@ router.get('/profile/notifications',authenticateJWT, async (req, res) => {
       review.engagement.pastsavecount = engagement.saveCount;
 
       review.save();
-
+      notifCount=notifCount+newLikes+newSaveCount;
       if (newLikes > 0 || newSaveCount > 0) {
         notifications.push({
           reviewId: _id,
@@ -306,15 +306,16 @@ router.get('/profile/notifications',authenticateJWT, async (req, res) => {
         });
       }
     });
-    const notifCount = reviews.reduce((total, review) => {
-      const newLikes = review.engagement.likes - review.engagement.pastlike;
-      const newSaveCount = review.engagement.saveCount - review.engagement.pastsavecount;
-      return total + newLikes + newSaveCount;
-    }, 0);
+    // const notifCount = reviews.reduce((ini, item) => {
+    //   const newLikes = item.engagement.likes - item.engagement.pastlike;
+    //   const newSaveCount = item.engagement.saveCount - item.engagement.pastsavecount;
+    //   return ini + newLikes + newSaveCount;
+    // }, 0);
     const responseData = {
       notifCount,
       notifications,
     };
+    // console.log(responseData);
     res.json(responseData);
   } catch (err) {
     console.error(err);
