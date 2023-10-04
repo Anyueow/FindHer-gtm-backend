@@ -15,11 +15,11 @@ function containsDollarSign(input) {
 
 function htmlSanitize (req, res, next) {
   console.log('htmlSanitize check');
-  console.log(req.body)
   try {
     for (const key in req.body) {
       if (req.body.hasOwnProperty(key)) {
         const value = req.body[key];
+        console.log(value);
         if (value && containsHtmlTags(value) || containsDollarSign(value)) {
           console.log("HTML error");
           console.log(value);
