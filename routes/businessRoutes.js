@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const Business = require("../models/business");
+const htmlSanitize = require("../middleware/htmlSanitize");
 const router = express.Router();
 router.use(express.json());
 // const app = express();
@@ -15,7 +16,7 @@ const port = process.env.PORT || 3000;
 //   useUnifiedTopology: true,
 // });
 
-router.post("/business/register", async (req, res) => {
+router.post("/business/register", htmlSanitize, async (req, res) => {
   try {
     const { name, location ,industry,summary} = req.body;
     console.log(req.body,"gg");

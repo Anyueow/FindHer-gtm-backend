@@ -6,26 +6,96 @@ const signinSchema = new Schema({
   email: {
     type: String,
     required: true,
+    validate: [
+      {
+      validator: function(value) {
+        return /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,8}/g.test(value);
+      },
+      message: 'Invalid email format',
+      },
+    ]
   },
   phoneNumber: {
     type: String,
     required: true,
+    validate: [
+      {
+      validator: function(value) {
+        return /^\d+$/.test(value);
+      },
+      message: 'Only numbers are allowed in phone number',
+      },
+      {
+      validator: function(value) {
+        return value.length === 10;
+      },
+      message: 'Eaxctly 10 numbers are allowed in phone number',
+    }
+    ]
   },
   password: {
     type: String,
     required: true,
+    validate: [
+      {
+      validator: function(value) {
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@!%*^?&#])[A-Za-z\d@!%*^?&#]{8,16}$/.test(value);
+      },
+      message: 'Password must have 8 to 16 characters, at least one uppercase letter, and at least one special symbol (excluding $).',
+      },
+    ]
   },
   firstName: {
     type: String,
     required: true,
+    validate: [{
+      validator: function(value) {
+        return /^[a-zA-Z]+$/.test(value);
+      },
+      message: 'Only alphabets are allowed in first name',
+    },
+    {
+    validator: function(value) {
+      return value.length <= 15;
+    },
+    message: 'Maximum 15 characters is allowed in first name',
+  }
+  ]
   },
   lastName: {
     type: String,
     required: true,
+    validate: [{
+      validator: function(value) {
+        return /^[a-zA-Z]+$/.test(value);
+      },
+      message: 'Only alphabets are allowed in last name',
+    },
+    {
+    validator: function(value) {
+      return value.length <= 15;
+    },
+    message: 'Maximum 15 characters is allowed in last name',
+  }
+  ]
   },
   otp: {
     type: String,
     required: true,
+    validate: [
+      {
+      validator: function(value) {
+        return /^\d+$/.test(value);
+      },
+      message: 'Only numbers are allowed',
+      },
+      {
+      validator: function(value) {
+        return value.length === 6;
+      },
+      message: 'Eaxctly 6 numbers are allowed',
+    }
+    ]
   },
   expireAt: {
     type: Date,
