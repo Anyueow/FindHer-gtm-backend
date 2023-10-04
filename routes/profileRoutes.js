@@ -268,5 +268,58 @@ else{
     res.status(500).json({ message: "Invalid user." });
 }
 });
+router.get('/profile/notifications',authenticateJWT, async (req, res) => {
+  const userId = req.user.id;
+  // console.log("hello",userId);
+  try {
 
+    const reviews = await Review.find({
+      user: userId,
+      $or: [
+        {
+          $expr: { $gt: ['$engagement.likes', '$engagement.pastlike'] },
+        },
+        {
+          $expr: { $gt: ['$engagement.saveCount', '$engagement.pastsavecount'] },
+        },
+      ],
+    });
+
+    const notifications = [];
+    let notifCount=0;
+    reviews.forEach((review) => {
+      const { _id, engagement } = review;
+
+      const newLikes = engagement.likes - engagement.pastlike;
+      review.engagement.pastlike = engagement.likes;
+
+      const newSaveCount = engagement.saveCount - engagement.pastsavecount;
+      review.engagement.pastsavecount = engagement.saveCount;
+
+      review.save();
+      notifCount=notifCount+newLikes+newSaveCount;
+      if (newLikes > 0 || newSaveCount > 0) {
+        notifications.push({
+          reviewId: _id,
+          newLikes,
+          newSaveCount,
+        });
+      }
+    });
+    // const notifCount = reviews.reduce((ini, item) => {
+    //   const newLikes = item.engagement.likes - item.engagement.pastlike;
+    //   const newSaveCount = item.engagement.saveCount - item.engagement.pastsavecount;
+    //   return ini + newLikes + newSaveCount;
+    // }, 0);
+    const responseData = {
+      notifCount,
+      notifications,
+    };
+    // console.log(responseData);
+    res.json(responseData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 module.exports = router;
