@@ -8,15 +8,25 @@ const jwt = require("jsonwebtoken");
 //const twilio = require("twilio");
 const dotenv = require("dotenv");
 const textflow = require("textflow.js");
-
+const htmlSanitize = require("../middleware/htmlSanitize");
 textflow.useKey(process.env.TextFlow_Key);
 
 const { generateNumericOTP } = require("../controller/otpGenerator");
 
 router.use(express.json());
 
+const rateLimit = require('express-rate-limit');
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit to 5 requests per windowMs
+  handler: (req, res) => {
+    res.status(429).json({ message: "Too many requests, please try again after 15 minutes." });
+  }
+});
+
 // POST - Add a new user
-router.post("/register", async (req, res) => {
+router.post("/register", htmlSanitize, async (req, res) => {
   console.log("holaaa", req.body);
 
 
@@ -64,7 +74,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-router.post("/verify", async (req, res) => {
+router.post("/verify", htmlSanitize, async (req, res) => {
   console.log("holaaa", req.body);
   const { email, phoneNumber, password , firstName, lastName } = req.body;
 
@@ -101,28 +111,38 @@ router.post("/verify", async (req, res) => {
 
     if (signinReg) {
       // Return success message
-      let result = await textflow.sendSMS(`+91${phoneNumber}`, `Your FindHer signin verification code is: ${otp}`);
-      if (result.ok) {
-        console.log("SUCCESS");
-        console.log(result);
+      // let result = await textflow.sendSMS(`+91${phoneNumber}`, `Your FindHer signin verification code is: ${otp}`);
+      // if (result.ok) {
+      //   console.log("SUCCESS");
+      //   console.log(result);
         res.status(201).json({ message: "Signin successfully registered." });
-      }
-      else{
-        console.log(result)
-        console.log("OTP failed");
-      }
+      // }
+      // else{
+      //   console.log(result)
+      //   console.log("OTP failed");
+      // }
     } else {
       console.error("Error occurred:", error);
       res.status(500).json({ message: "Internal server error." });
     }
   } catch (error) {
-    console.error("Error occurred:", error);
-    res.status(500).json({ message: "Internal server error." });
+    if (error.name === "ValidationError") {
+      // Mongoose validation error
+      const validationErrors = Object.values(error.errors).map(
+        (error) => error.message
+      );
+      console.error("Validation errors occurred:", validationErrors[0]);
+      res.status(400).json({ message: validationErrors[0] });
+    } else {
+      // Other types of errors
+      console.error("Error occurred:", error.message);
+      res.status(500).json({ message: error.message });
+    }
   }
 });
 
 // POST - Login an existing user
-router.post("/login", async (req, res) => {
+router.post("/login",htmlSanitize, limiter, async (req, res) => {
   const { email, phoneNumber, password } = req.body;
 
   // Check if the user has filled out everything
@@ -143,7 +163,7 @@ router.post("/login", async (req, res) => {
     ) {
       return res
         .status(400)
-        .json({ message: "Invalid email, phone number or password." });
+        .json({ message: "Invalid User Id or Password" });
     }
 
     // Generate JWT token

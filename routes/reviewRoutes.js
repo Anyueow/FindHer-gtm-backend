@@ -4,6 +4,7 @@ const Review = require("../models/reviews");
 const depart = require("../models/department");
 const jobTitle = require("../models/job_titles");
 const authenticateJWT = require("../middleware/auth");
+const htmlSanitize = require("../middleware/htmlSanitize");
 router.use(express.json());
 
 async function checkAndInsertJobTitle(item) {
@@ -43,6 +44,7 @@ async function checkAndInsertDepartment(item) {
 // POST - Add a new review
 router.post(
   "/protectedRoute/createReview",
+  htmlSanitize,
   authenticateJWT,
   async (req, res) => {
     const {
@@ -132,7 +134,7 @@ const User = require("../models/user");
 // ...
 
 // Your route handler
-router.post("/updateRatings", authenticateJWT, async (req, res) => {
+router.post("/updateRatings", htmlSanitize, authenticateJWT, async (req, res) => {
   const { ratings, reviewId,secondPageTime } = req.body;
   const user = req.user.id;
 
@@ -161,7 +163,7 @@ router.post("/updateRatings", authenticateJWT, async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 });
-router.post('/jobTitleList', async (req, res) => {
+router.post('/jobTitleList', htmlSanitize, async (req, res) => {
   const {inputTitle} = req.body;
 
   try {
@@ -174,7 +176,7 @@ router.post('/jobTitleList', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-router.post('/jobDepList', async (req, res) => {
+router.post('/jobDepList', htmlSanitize, async (req, res) => {
   const {inputDep} = req.body;
 
   try {
@@ -207,7 +209,7 @@ router.get('/getReviews', async (req, res) => {
   }
 });
 // route to increase/decrease count of likes
-router.post('/reviewLike', async (req, res) => {
+router.post('/reviewLike', htmlSanitize, async (req, res) => {
   const {reviewId,increase} = req.body; // increase = false : review disliked
 
   try {
@@ -227,7 +229,7 @@ router.post('/reviewLike', async (req, res) => {
   }
 });
 // route to increase/decrease count of review saved
-router.post('/reviewSave', async (req, res) => {
+router.post('/reviewSave', htmlSanitize, async (req, res) => {
   const {reviewId,saved} = req.body; // saved = false : review unsaved hence decrement with one
 
   try {
@@ -247,7 +249,7 @@ router.post('/reviewSave', async (req, res) => {
   }
 });
 // route to save saved-review id's to user's database
-router.post('/userSavedReview', async (req, res) => {
+router.post('/userSavedReview', htmlSanitize, async (req, res) => {
   const {reviewId,saved} = req.body; // saved = false : review unsaved hence decrement with one
   const user = req.user.id;
 
@@ -278,7 +280,7 @@ router.post('/userSavedReview', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
-router.post("/updateReviewDetails", authenticateJWT, async (req, res) => {
+router.post("/updateReviewDetails",htmlSanitize, authenticateJWT, async (req, res) => {
   const { reviewId, questionOne, questionTwo,thirdPageTime} = req.body;
 
   const user = req.user.id;
@@ -311,7 +313,7 @@ router.post("/updateReviewDetails", authenticateJWT, async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 });
-router.post("/updateFeatures", authenticateJWT, async (req, res) => {
+router.post("/updateFeatures",htmlSanitize, authenticateJWT, async (req, res) => {
   const { reviewId, features,fourthPageTime,addInfo} = req.body;
 
   const user = req.user.id;

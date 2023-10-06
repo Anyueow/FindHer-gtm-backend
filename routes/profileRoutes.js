@@ -9,6 +9,8 @@ const dotenv = require("dotenv");
 const authenticateJWT = require("../middleware/auth");
 const { generateNumericOTP } = require("../controller/otpGenerator");
 const { sendMail } = require("../controller/SendMail");
+const htmlSanitize = require("../middleware/htmlSanitize");
+const { uploadAndCheckFileType } = require('../middleware/imageUpload');
 
 const textflow = require("textflow.js");
 
@@ -25,11 +27,11 @@ router.get("/profile/view", authenticateJWT, async (req, res) => {
       firstName: userDetails.firstName,
       lastName: userDetails.lastName,
       email: userDetails.email,
-      profilePic: userDetails.profilePic,
-      companyName: workDetails.companyName,
-      positionTitle: workDetails.positionTitle,
-      department: workDetails.department,
-      companyOffice: workDetails.companyOffice,
+      profilePic: userDetails?.profilePic,
+      companyName: workDetails?.companyName,
+      positionTitle: workDetails?.positionTitle,
+      department: workDetails?.department,
+      companyOffice: workDetails?.companyOffice,
     });
   } catch (error) {
     console.error("Error occurred:", error);
@@ -37,10 +39,16 @@ router.get("/profile/view", authenticateJWT, async (req, res) => {
   }
 });
 
-router.post("/profile/upload", authenticateJWT, async (req, res) => {
+router.post("/profile/upload",htmlSanitize, uploadAndCheckFileType, authenticateJWT, async (req, res) => {
   console.log("upload");
   console.log(req.body);
   const { profilePic } = req.body;
+
+    if (!profilePic) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  
   try {
     await User.findByIdAndUpdate(req.user.id, { profilePic: profilePic });
     res.status(201).json({ message: "Profile uploaded successfully." });
@@ -50,10 +58,7 @@ router.post("/profile/upload", authenticateJWT, async (req, res) => {
   }
 });
 
-router.post(
-  "/profile/number/otp/request",
-  authenticateJWT,
-  async (req, res) => {
+router.post("/profile/number/otp/request", htmlSanitize, authenticateJWT, async (req, res) => {
     console.log("otp request");
     console.log(req.body);
     const { phoneNumber } = req.body;
@@ -108,7 +113,7 @@ router.post(
   }
 );
 
-router.post("/profile/number/change", authenticateJWT, async (req, res) => {
+router.post("/profile/number/change",htmlSanitize, authenticateJWT, async (req, res) => {
   console.log("change/number");
   console.log(req.body);
   const { otp } = req.body;
@@ -140,10 +145,7 @@ router.post("/profile/number/change", authenticateJWT, async (req, res) => {
 });
 
 
-router.post(
-  "/profile/email/otp/request",
-  authenticateJWT,
-  async (req, res) => {
+router.post("/profile/email/otp/request", htmlSanitize, authenticateJWT, async (req, res) => {
     console.log("otp email request");
     console.log(req.body);
     const { email } = req.body;
@@ -174,14 +176,74 @@ router.post(
         { new: true }
       );
 
-      const content = `
-      <h4>Hi there,</h4>
-      <p>Your OTP is: ${otp}</p>
-      <p><b>Regards</b>,</p>
-      <P>FindHer</p>
-    `;
-    
-      let result = await sendMail(email, "Email change request - OTP", content);
+    const content = `
+    <!DOCTYPE html>
+    <html>
+      <head>  <style>
+          body {
+            font-family: Poppins;
+            font-size: 16px;
+          }
+          .footer{
+            background-color: black;
+            color: white;
+            align-items: center;
+            text-align: center;
+            font-size: 16px;
+          }
+          .menu a {
+            color: white;      
+            text-decoration: none; 
+            font-family: Poppins;
+            font-size: 21px;
+            font-weight: 500;
+        }
+        </style>
+      </head>
+       <body>  <p>Hello ${user.firstName},</p>
+      <p>Thank you for signing up at <b>FindHer</b>! We're thrilled to have you onboard. Please verify your email address using the code below.</p>
+      <p><b>Your Verification Code:</b> ${otp}</p>
+      <hr>
+      <p>But that's not all! You're now part of a growing community eagerly waiting for the launch of FindHer. Here's why you should be excited:</p>
+      <ul>
+          <li>🚀 <b>Exclusive Early Access:</b> Being on our waitlist means you'll be among the first to experience all that our platform has to offer.</li>
+          <li>💌 <b>Regular Updates:</b> We'll keep you in the loop with the latest news, updates, and features we're adding.</li>
+          <li>🔓 <b>Unlock Insights:</b> With FindHer, you're on your way to unlocking exclusive information about unique opportunities tailored just for you.</li>
+          <li>💡 <b>Stay Engaged:</b> Engage with our community on <a href="https://www.instagram.com/findher.work/" target="_blank">social media</a>, join discussions, share your thoughts, and even get sneak peeks of what's coming.</li>
+      </ul>
+      <p>Have questions or need assistance? Don't hesitate to reach out. We're here to help.</p>
+      <p><b>See you soon on FindHer!</b></p>
+      <p >Warm regards,</p>
+      <p style="margin-bottom: 0">Anjali & Ananya</p>
+      <p style="margin-top: 0;">Founders</p>
+      </body>
+      <div class="footer" style="padding: 30px;">
+      <p>Stay Connected</p>
+      <div class="icons">
+      <a href="#"><img src="https://myawsbucket8870.s3.eu-north-1.amazonaws.com/facebook12.png" alt="Facebook" style="width: 36px; padding: 14px;"/></a>
+      <a href="#" ><img src="https://myawsbucket8870.s3.eu-north-1.amazonaws.com/insta-black2.jpg" alt="Instagram" style="width: 45px; padding: 7px;"/></a>
+          <a href="#" ><img src="https://myawsbucket8870.s3.eu-north-1.amazonaws.com/twitter.jpg" alt="twitter" style="width: 45px; padding: 10px;" /></a>
+          <a href="#" ><img src="https://myawsbucket8870.s3.eu-north-1.amazonaws.com/youtube.png" alt="Youtube" style="width: 40px; padding: 18px;"/></a>
+      </div>
+      <div class="menu">
+          <a href="#" style="padding: 10px;">FindHer</a> | 
+          <a href="#" style="padding: 10px;">About</a> | 
+          <a href="#" style="padding: 10px;">Terms of Use</a> | 
+          <a href="#" style="padding: 10px;">Privacy</a>
+      </div>
+      <div class="address">
+      <p  style="margin-bottom: 0;">123 Main Street, City, Country</p>
+      <p style="margin-top: 0;">© 2023 FindHer.All rights reserved</p>
+  </div>
+  </div>
+      </html>
+      `;
+
+    let result = await sendMail(
+      email,
+      "Your Verification Code from FindHer! 🎉",
+      content
+    );
       if (result) {
         console.log("SUCCESS");
         console.log(result);
@@ -203,7 +265,7 @@ router.post(
   }
 );
 
-router.post("/profile/email/change", authenticateJWT, async (req, res) => {
+router.post("/profile/email/change",htmlSanitize, authenticateJWT, async (req, res) => {
   console.log("change/email");
   console.log(req.body);
   const { otp } = req.body;
@@ -234,7 +296,7 @@ router.post("/profile/email/change", authenticateJWT, async (req, res) => {
   }
 });
 
-router.post("/profile/work", authenticateJWT, async (req, res) => {
+router.post("/profile/work", htmlSanitize, authenticateJWT, async (req, res) => {
   console.log("work");
   console.log(req.body);
   const { companyName, positionTitle, companyOffice, department } = req.body;
@@ -259,8 +321,18 @@ if(userDetails){
     console.log(result)
     res.status(201).json({ message: "Work details updated successfully." });
   } catch (error) {
-    console.error("Error occurred:", error);
-    res.status(500).json({ message: "Internal server error." });
+    if (error.name === "ValidationError") {
+      // Mongoose validation error
+      const validationErrors = Object.values(error.errors).map(
+        (error) => error.message
+      );
+      console.error("Validation errors occurred:", validationErrors[0]);
+      res.status(400).json({ message: validationErrors[0] });
+    } else {
+      // Other types of errors
+      console.error("Error occurred:", error.message);
+      res.status(500).json({ message: error.message });
+    }
   }
 }
 else{

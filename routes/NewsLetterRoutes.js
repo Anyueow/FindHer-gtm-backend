@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const newsEmail = require("../models/NewsLetter");
+const htmlSanitize = require("../middleware/htmlSanitize");
 router.use(express.json());
 
-router.post("/newsletter", async (req, res) => {
+router.post("/newsletter", htmlSanitize, async (req, res) => {
     console.log("got the emmail");
   const { email } = req.body;
   try {
