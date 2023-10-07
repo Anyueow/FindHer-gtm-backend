@@ -38,7 +38,7 @@ app.use(mongoSanitize());
 
 
 // Apply the htmlSanitizeMiddleware to all routes
-app.use(htmlSanitize);
+// app.use(htmlSanitize);
 
 dotenv.config({ path: "./config.env"});
 const DB= process.env.DATABASE;
@@ -79,12 +79,12 @@ app.options( (req, res, next) => {
 
 });
 
-// app.use((req, res, next) => {
-//     if (req.headers['x-forwarded-proto'] !== 'https') {
-//         return res.redirect(`https://${req.hostname}${req.url}`);
-//     }
-//     next();
-// });
+app.use((req, res, next) => {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+        return res.redirect(`https://${req.hostname}${req.url}`);
+    }
+    next();
+});
 
 app.get("/get-csrf-token", csrfProtection, (req, res) => {
     const csrfToken = req.csrfToken();

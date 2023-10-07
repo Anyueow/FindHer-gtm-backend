@@ -9,7 +9,7 @@ const signinSchema = new Schema({
     validate: [
       {
       validator: function(value) {
-        return /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,8}/g.test(value);
+        return /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,10}/g.test(value);
       },
       message: 'Invalid email format',
       },

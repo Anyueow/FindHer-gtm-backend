@@ -10,7 +10,7 @@ function containsHtmlTags(input) {
 
 function containsDollarSign(input) {
   // Check for the presence of the $ symbol
-  return input.includes('$');
+  return String(input).includes('$');
 }
 
 function htmlSanitize (req, res, next) {
