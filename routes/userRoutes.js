@@ -110,17 +110,35 @@ router.post("/verify", htmlSanitize, async (req, res) => {
     const signinReg = await newSignin.save();
 
     if (signinReg) {
-      // Return success message
-      // let result = await textflow.sendSMS(`+91${phoneNumber}`, `Your FindHer signin verification code is: ${otp}`);
-      // if (result.ok) {
-      //   console.log("SUCCESS");
-      //   console.log(result);
-        res.status(201).json({ message: "Signin successfully registered." });
-      // }
-      // else{
-      //   console.log(result)
-      //   console.log("OTP failed");
-      // }
+      const message = `Your FindHer signin verification code is: ${otp}`;
+      const numbers = [phoneNumber];
+      const route = 'otp';
+      const variables_values = otp;
+
+      const data = new URLSearchParams();
+      data.append('numbers', numbers.join(','));
+      data.append('message', message);
+      data.append('route', route);
+      data.append('variables_values', variables_values);
+
+      const headers = {
+        'authorization':  process.env.Fast2sms_Key,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      };
+
+      const response = await fetch('https://www.fast2sms.com/dev/bulkV2', {
+        method: 'POST',
+        headers,
+        body: data,
+      });
+      const result = await response.json();
+      if (response.ok) {
+        console.log('SMS sent successfully');
+        res.status(201).json({ message: 'Signin successfully registered.' });
+      } else {
+        console.error('Failed to send SMS:', result);
+        res.status(500).json({ message: 'Failed to send SMS' });
+      }
     } else {
       console.error("Error occurred:", error);
       res.status(500).json({ message: "Internal server error." });
