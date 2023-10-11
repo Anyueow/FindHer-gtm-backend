@@ -13,101 +13,117 @@ const reviewSchema = new Schema({
   },
   companyName: {
     type: String,
-    required: true,
+    default:""
   },
   companyOffice: {
     type: String,
-    required: true,
+    default:""
   },
 
   positionTitle: {
     type: String,
-    required: true,
+    default:""
   },
   startDate: {
     type: String,
-    required: true,
+    default:""
   },
   endDate: {
     type: String,
-    required: false,
+    default:""
   },
   industry: {
     type: String,
-    required: true,
+    default:""
   },
   department: {
     type: String,
-    required: true,
+    default:""
   },
   employementStatus: {
     type: String,
-    required: true,
+    default:""
   },
   currworking: {
     type: Boolean,
-    required: true,
+    default:""
   },
   features: {
     firstOne: {
-      type: [String],
+      type: [String], 
+       default:""
     },
     setTwo: {
       type: [String],
+       default:""
     },
   },
   ratings: {
     flexibility: {
       type: Number,
+       default:""
     },
     management: {
       type: Number,
+       default:""
     },
     coworkers: {
       type: Number,
+       default:""
     },
     diversity: {
       type: Number,
+       default:""
     },
     safety: {
       type: Number,
+       default:""
     },
     compensation: {
       type: Number,
+       default:""
     },
   },
   question1: {
     question: {
       type: String,
+       default:""
       // required: true,
     },
     answer: {
       type: String,
+       default:""
       // required: true,
     },
   },
   question2: {
     question: {
       type: String,
+       default:""
       // required: true,
     },
     answer: {
       type: String,
+       default:""
       // required: true,
     },
   },
   pageTimings: {
     firstPageTime: {
       type: String,
+       default:""
     },
     secondPageTime: {
       type: String,
+       default:""
     },
     thirdPageTime: {
       type: String,
+       default:""
     },
     fourthPageTime: {
       type: String,
+       default:""
     },
   },
   engagement: {
@@ -130,6 +146,7 @@ const reviewSchema = new Schema({
   },
   addInfo:{
     type:String,
+    default:""
   }
 });
 
