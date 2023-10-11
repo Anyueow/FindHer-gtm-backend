@@ -34,12 +34,10 @@ const locationSchema = new Schema({
 const businessSchema = new Schema({
   companyName: {
     type: String,
-    required: true,
     unique: true,
   },
   personName: {
     type: String,
-    required: true,
   },
   personEmail: {
     type: String,
@@ -52,19 +50,18 @@ const businessSchema = new Schema({
   },
   industryType: {
     type: String,
-    required: true,
   },
   summary: {
     type: String,
-    required: true,
+  },
+  requirements: {
+    type: String,
   },
   lifeAtWork: {
     type: String,
-    required: true,
   },
   whyUS: {
     type: String,
-    required: true,
   },
   amenities: [
     {
