@@ -3,37 +3,70 @@ const Schema = mongoose.Schema;
 const bcrypt = require("bcryptjs");
 
 const locationSchema = new Schema({
-  zipCode: {
+
+  HQ: {
+    type: String,
+  },
+  otherLocations: [
+    {
+      type: String,
+    },
+  ],
+});
+
+// locationSchema.pre("save", async function (next) {
+//   if (!this.isModified("password")) {
+//     return next();
+//   }
+//   try {
+//     const salt = await bcrypt.genSalt(10);
+//     this.password = await bcrypt.hash(this.password, salt);
+//     return next();
+//   } catch (err) {
+//     return next(err);
+//   }
+// });
+
+// locationSchema.methods.comparePassword = async function (password) {
+//   return bcrypt.compare(password, this.password);
+// };
+
+const businessSchema = new Schema({
+  companyName: {
     type: String,
     required: true,
+    unique: true,
   },
   personName: {
     type: String,
     required: true,
   },
-  email: {
+  personEmail: {
     type: String,
   },
-  phone: {
+  websiteLink: {
     type: String,
   },
-  password: {
+  employeesCount: {
+    type: String,
+  },
+  industryType: {
     type: String,
     required: true,
   },
-  employees_count: {
-    type: Number,
-  },
-  office_type: {
+  summary: {
     type: String,
-    enum: ["franchise", "branch", "headquarters", "co-working space"],
+    required: true,
+  },
+  lifeAtWork: {
+    type: String,
+    required: true,
+  },
+  whyUS: {
+    type: String,
+    required: true,
   },
   amenities: [
-    {
-      type: String,
-    },
-  ],
-  certifications: [
     {
       type: String,
     },
@@ -43,42 +76,6 @@ const locationSchema = new Schema({
       type: String,
     },
   ],
-  notes: {
-    type: String,
-  },
-});
-
-locationSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    return next();
-  }
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    return next();
-  } catch (err) {
-    return next(err);
-  }
-});
-
-locationSchema.methods.comparePassword = async function (password) {
-  return bcrypt.compare(password, this.password);
-};
-
-const businessSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  industry: {
-    type: String,
-    required: true,
-  },
-  summary: {
-    type: String,
-    required: true,
-  },
   locations: [locationSchema],
 });
 
