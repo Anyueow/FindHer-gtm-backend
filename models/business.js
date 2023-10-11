@@ -51,7 +51,7 @@ const businessSchema = new Schema({
   industryType: {
     type: String,
   },
-  summary: {
+  aboutUs: {
     type: String,
   },
   requirements: {
@@ -61,6 +61,9 @@ const businessSchema = new Schema({
     type: String,
   },
   whyUS: {
+    type: String,
+  },
+  moreDetails: {
     type: String,
   },
   amenities: [
