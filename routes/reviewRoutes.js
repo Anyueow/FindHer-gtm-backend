@@ -5,6 +5,9 @@ const depart = require("../models/department");
 const jobTitle = require("../models/job_titles");
 const authenticateJWT = require("../middleware/auth");
 const htmlSanitize = require("../middleware/htmlSanitize");
+const mongoose = require("mongoose");
+const User = require("../models/user");
+
 router.use(express.json());
 
 async function checkAndInsertJobTitle(item) {
@@ -44,122 +47,127 @@ async function checkAndInsertDepartment(item) {
 
 // checkAndInsertJobTitle("CTO");
 // POST - Add a new review
-router.post(
-  "/protectedRoute/createReview",
-  htmlSanitize,
-  authenticateJWT,
-  async (req, res) => {
-    const {
-      companyName,
-      industry,
-      positionTitle,
-      startDate,
-      endDate,
-      department,
-      companyOffice,
-      employementStatus,
-      currworking,
-      firstPageTime
+router.post("/createReview", htmlSanitize, authenticateJWT, async (req, res) => {
+  const { companyName, industry, positionTitle, startDate, endDate, department, companyOffice, employementStatus, 
+    currworking, firstPageTime} = req.body;
 
-    } = req.body;
-    console.log(companyName,
-      industry,
-      positionTitle,
-      startDate,
-      endDate,
-      department,
-      companyOffice,
-      employementStatus,
-      currworking,);
-    const userId = req.user.id; // Corrected line
+    console.log("review")
+  
+  const userId = req.user.id; // Retrieve the user ID from the request
 
-    // Check if the user has filled out the required fields
-    if (
-      !companyName ||
-      !companyOffice ||
-      !positionTitle ||
-      !startDate ||
-      // !endDate ||
-      // !currworking ||
-      !employementStatus ||
-      !department ||
-      !industry
-    ) {
-      return res
-        .status(400)
-        .json({ message: "Please fill out all required fields." });
+  // Check if the user has filled out the required fields
+  if (!companyName || !companyOffice || !positionTitle || !startDate || !employementStatus || !department || !industry) 
+  {
+    console.log( "Please fill out all required fields.")
+    return res.status(400).json({ message: "Please fill out all required fields." });
+  }
+  try {
+  // Create a new review object
+  const newReview = {
+    companyName: companyName,
+    industry: industry,
+    positionTitle: positionTitle,
+    startDate: startDate,
+    endDate: endDate, 
+    department: department,
+    companyOffice: companyOffice,
+    employementStatus: employementStatus,
+    currworking: currworking,
+    pageTimings: {
+      firstPageTime: firstPageTime,
+    },
+  };
+
+   
+    const checkLength = await Review.findOne({ user: userId });
+    const reviewLength = checkLength.reviews.length;
+
+    const updatedUser = await User.findById(userId);
+    if (reviewLength === 0) {
+      updatedUser.companyInfo.companyName = companyName;
+      updatedUser.companyInfo.jobTitle = positionTitle;
+      updatedUser.companyInfo.department = department;
+      updatedUser.companyInfo.officeLocation = companyOffice;
+      // Save the updated user document
+      await updatedUser.save();
     }
-    checkAndInsertJobTitle(positionTitle);
-    checkAndInsertDepartment(department)
-    try {
-      const initialReview = new Review({
-        companyName,
-        industry,
-        positionTitle,
-        startDate,
-        endDate,
-        department,
-        companyOffice,
-        employementStatus,
-        currworking,
-        user: userId, // Include user field in the Review object
-        pageTimings: {
-          firstPageTime: firstPageTime,
-        },
-      }
-      // { $set: { 'pageTimings.firstPageTime': firstPageTime } }
-      );
 
+ // Find the user by their user ID and push the new review into their reviews array
+    const updatedReview = await Review.findOneAndUpdate(
+      { user: userId },
+      { $push: { reviews: newReview } },
+      { new: true }
+    );
+    console.log(updatedReview.reviews[updatedUser.reviews.length ]._id)
+    if (updatedReview) {
+      const reviewId = updatedReview.reviews[updatedUser.reviews.length ]._id;
 
-
-      const savedReview = await initialReview.save();
-
-      if (savedReview) {
-        // Return success message and review ID
-        res.status(201).json({
-          message: "Review successfully created.",
-          reviewId: savedReview._id,
-        });
-      } else {
-        res.status(500).json({ message: "Internal server error." });
-      }
-    } catch (error) {
-      console.error("Error occurred:", error);
+    
+      console.log(reviewId)
+      res.status(201).json({
+        message: "Review successfully created.",
+        reviewId: reviewId,
+      });
+    } else {
+      console.log(updatedReview)
+      console.error("Error occurred while updating", );
       res.status(500).json({ message: "Internal server error." });
     }
+  } catch (error) {
+    console.error("Error occurred:", error);
+    res.status(500).json({ message: "Internal server error." });
   }
-);
+});
 
-const mongoose = require("mongoose");
-const User = require("../models/user");
+
 
 // ...
 
 // Your route handler
 router.post("/updateRatings", htmlSanitize, authenticateJWT, async (req, res) => {
   const { ratings, reviewId,secondPageTime } = req.body;
-  const user = req.user.id;
-
+  const userId = req.user.id;
+console.log(userId, "ratings")
   // Validate reviewId
-  if (!mongoose.Types.ObjectId.isValid(reviewId)) {
-    return res.status(400).json({ message: "Invalid review ID" });
-  }
+  // if (!mongoose.Types.ObjectId.isValid(reviewId)) {
+  //   return res.status(400).json({ message: "Invalid review ID" });
+  // }
 
   try {
-    const updatedReview = await Review.findOneAndUpdate(
-      { _id: reviewId, user: user },
-      { $set: { ratings: ratings, 'pageTimings.secondPageTime': secondPageTime }, },
-      { new: true }
-    );
-
+    const updatedReview = await Review.findOne({ user: userId });
     if (updatedReview) {
-      res.status(200).json({
-        message: "Ratings updated successfully.",
-        review: updatedReview,
-      });
+      // Find the index of the review within the reviews array based on the _id
+      const reviewIndex = updatedReview.reviews.findIndex(review => review._id.toString() === reviewId);
+    
+      if (reviewIndex !== -1) {
+        // Update the fields of the specific review
+        updatedReview.reviews[reviewIndex].ratings = ratings;
+        updatedReview.reviews[reviewIndex].pageTimings.secondPageTime = secondPageTime;
+    
+        // Save the updated user object
+        const update = await updatedReview.save();
+        res.status(200).json({message: "Ratings updated successfully."});
+      } else {
+        console.error('Review not found.');
+      }
     } else {
-      res.status(400).json({ message: "Review not found." });
+      console.error('User not found.');
     }
+    
+    // const updatedReview = await Review.findOneAndUpdate(
+    //   { _id: reviewId, user: userId },
+    //   { $set: { ratings: ratings, 'pageTimings.secondPageTime': secondPageTime }, },
+    //   { new: true }
+    // );
+
+    // if (updatedReview) {
+    //   res.status(200).json({
+    //     message: "Ratings updated successfully.",
+    //     review: updatedReview,
+    //   });
+    // } else {
+    //   res.status(400).json({ message: "Review not found." });
+    // }
   } catch (error) {
     console.error("Error occurred:", error);
     res.status(500).json({ message: "Internal server error." });
@@ -287,31 +295,53 @@ router.post('/userSavedReview', htmlSanitize, async (req, res) => {
 router.post("/updateReviewDetails",htmlSanitize, authenticateJWT, async (req, res) => {
   const { reviewId, questionOne, questionTwo,thirdPageTime} = req.body;
 
-  const user = req.user.id;
+  const userId = req.user.id;
 
   try {
-    const updatedReview = await Review.findOneAndUpdate(
-      { _id: reviewId, user: user },
-      {
-        $set: {
-          'question1.question': questionOne.question,
-          'question1.answer': questionOne.answer,
-          'question2.question': questionTwo.question,
-          'question2.answer': questionTwo.answer,
-          'pageTimings.thirdPageTime': thirdPageTime
-        },
-      },
-      { new: true }
-    );
-
+    const updatedReview = await Review.findOne({ user: userId });
     if (updatedReview) {
-      res.status(200).json({
-        message: "Review details updated successfully.",
-        review: updatedReview,
-      });
+      // Find the index of the review within the reviews array based on the _id
+      const reviewIndex = updatedReview.reviews.findIndex(review => review._id.toString() === reviewId);
+    
+      if (reviewIndex !== -1) {
+        // Update the fields of the specific review
+        updatedReview.reviews[reviewIndex].question1.question =  questionOne.question;
+        updatedReview.reviews[reviewIndex].question1.answer =  questionOne.answer;
+        updatedReview.reviews[reviewIndex].question2.question =  questionTwo.question;
+        updatedReview.reviews[reviewIndex].question2.answer =  questionTwo.answer;
+        updatedReview.reviews[reviewIndex].pageTimings.thirdPageTime =  thirdPageTime;
+        // Save the updated user object
+        const update = await updatedReview.save();
+        res.status(200).json({message: "Review details updated successfully."});
+      } else {
+        console.error('Review not found.');
+      }
     } else {
-      res.status(400).json({ message: "Review not found." });
+      console.error('User not found.');
+      res.status(200).json({message: "Invalid user credentials"});
     }
+    // const updatedReview = await Review.findOneAndUpdate(
+    //   {  user: user },
+    //   {
+    //     $set: {
+    //       'question1.question': questionOne.question,
+    //       'question1.answer': questionOne.answer,
+    //       'question2.question': questionTwo.question,
+    //       'question2.answer': questionTwo.answer,
+    //       'pageTimings.thirdPageTime': thirdPageTime
+    //     },
+    //   },
+    //   { new: true }
+    // );
+
+    // if (updatedReview) {
+    //   res.status(200).json({
+    //     message: "Review details updated successfully.",
+    //     review: updatedReview,
+    //   });
+    // } else {
+    //   res.status(400).json({ message: "Review not found." });
+    // }
   } catch (error) {
     console.error("Error occurred:", error);
     res.status(500).json({ message: "Internal server error." });
@@ -320,30 +350,51 @@ router.post("/updateReviewDetails",htmlSanitize, authenticateJWT, async (req, re
 router.post("/updateFeatures",htmlSanitize, authenticateJWT, async (req, res) => {
   const { reviewId, features,fourthPageTime,addInfo} = req.body;
 
-  const user = req.user.id;
+  const userId = req.user.id;
 
   try {
-    const updatedReview = await Review.findOneAndUpdate(
-      { _id: reviewId, user: user , addInfo:addInfo},
-      {
-        $set: {
-          'features.firstOne': features.firstOne,
-          'features.setTwo': features.setTwo,
-          'pageTimings.fourthPageTime': fourthPageTime
-        },
-      },
-      { new: true }
-    );
-
+    const updatedReview = await Review.findOne({ user: userId });
     if (updatedReview) {
-      res.status(200).json({
-        message: "Review details updated successfully.",
-        review: updatedReview,
-      });
-      // console.log(features);
+      // Find the index of the review within the reviews array based on the _id
+      const reviewIndex = updatedReview.reviews.findIndex(review => review._id.toString() === reviewId);
+    
+      if (reviewIndex !== -1) {
+        // Update the fields of the specific review
+        updatedReview.reviews[reviewIndex].features.firstOne =  features.firstOne;
+        updatedReview.reviews[reviewIndex].features.setTwo =  features.setTwo;
+        updatedReview.reviews[reviewIndex].addInfo =  addInfo;
+        updatedReview.reviews[reviewIndex].pageTimings.fourthPageTime =  fourthPageTime;
+        // Save the updated user object
+        const update = await updatedReview.save();
+        res.status(200).json({message: "Review details updated successfully."});
+      } else {
+        console.error('Review not found.');
+      }
     } else {
-      res.status(400).json({ message: "Review not found." });
+      console.error('User not found.');
+      res.status(200).json({message: "Invalid user credentials"});
     }
+    // const updatedReview = await Review.findOneAndUpdate(
+    //   { _id: reviewId, user: user , addInfo:addInfo},
+    //   {
+    //     $set: {
+    //       'features.firstOne': features.firstOne,
+    //       'features.setTwo': features.setTwo,
+    //       'pageTimings.fourthPageTime': fourthPageTime
+    //     },
+    //   },
+    //   { new: true }
+    // );
+
+    // if (updatedReview) {
+    //   res.status(200).json({
+    //     message: "Review details updated successfully.",
+    //     review: updatedReview,
+    //   });
+    //   // console.log(features);
+    // } else {
+    //   res.status(400).json({ message: "Review not found." });
+    // }
   } catch (error) {
     console.error("Error occurred:", error);
     res.status(500).json({ message: "Internal server error." });

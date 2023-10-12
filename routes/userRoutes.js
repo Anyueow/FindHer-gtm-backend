@@ -37,7 +37,7 @@ router.post("/register", htmlSanitize, async (req, res) => {
     req.body;
   // Check if the user has filled out everything
   const workDetail = linkedinUrl ? linkedinUrl : jobDetail;
-  if (!email || !phoneNumber || !password || !workDetail) {
+  if (!email || !phoneNumber || !password || !otp) {
     return res.status(400).json({ message: "Please fill out all fields." });
   }
 
@@ -48,28 +48,29 @@ router.post("/register", htmlSanitize, async (req, res) => {
     if (existingUserPhone) {
       if (await bcrypt.compare(otp, existingUserPhone.otp)) {
         // Create new user
-        const dummyReview = new Review({
-          user: existingUserPhone._id,
-        });
-        await dummyReview.save();
         const newUser = new User({
           email: existingUserPhone.email,
           phoneNumber: existingUserPhone.phoneNumber,
           password: existingUserPhone.password,
           firstName: existingUserPhone.firstName,
           lastName: existingUserPhone.lastName,
-          reviews: dummyReview,
           linkedinUrl: linkedinUrl ? linkedinUrl : "",
           companyName: jobDetail ? jobDetail.companyName : "",
           jobTitle: jobDetail ? jobDetail.jobTitle : "",
         });
         const userReg = await newUser.save();
-        // Generate JWT token
+        
+        const dummyReview = new Review({
+          user: newUser._id,
+        });
+        await dummyReview.save();
 
+        // Generate JWT token
         const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
           expiresIn: "24h",
         });
         if (userReg) {
+         
           // Return success message
           res
             .status(201)
@@ -152,7 +153,7 @@ router.post("/verify", htmlSanitize, async (req, res) => {
         res.status(201).json({ message: "Signin successfully registered." });
       } else {
         console.error("Failed to send SMS:", result);
-        res.status(500).json({ message: "Failed to send SMS" });
+        res.status(200).json({ message: "Failed to send SMS" });
       }
     } else {
       console.error("Error occurred:", error);

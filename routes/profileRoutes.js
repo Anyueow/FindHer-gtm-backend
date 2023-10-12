@@ -21,17 +21,16 @@ router.get("/profile/view", authenticateJWT, async (req, res) => {
   try {
     const userDetails = await User.findOne({ _id: req.user.id });
 
-    const workDetails = await Review.findOne({ user: req.user.id });
     res.status(200).json({
       phoneNumber: userDetails.phoneNumber,
       firstName: userDetails.firstName,
       lastName: userDetails.lastName,
       email: userDetails.email,
       profilePic: userDetails?.profilePic,
-      companyName: workDetails?.companyName,
-      positionTitle: workDetails?.positionTitle,
-      department: workDetails?.department,
-      companyOffice: workDetails?.companyOffice,
+      companyName: userDetails.companyInfo?.companyName,
+      positionTitle: userDetails.companyInfo?.jobTitle,
+      department: userDetails.companyInfo?.department,
+      companyOffice: userDetails.companyInfo?.officeLocation,
     });
   } catch (error) {
     console.error("Error occurred:", error);
@@ -296,7 +295,7 @@ router.post("/profile/email/change",htmlSanitize, authenticateJWT, async (req, r
   }
 });
 
-router.post("/profile/work", htmlSanitize, authenticateJWT, async (req, res) => {
+router.post("/profile/update", htmlSanitize, authenticateJWT, async (req, res) => {
   console.log("work");
   console.log(req.body);
   const { companyName, positionTitle, companyOffice, department } = req.body;
@@ -308,16 +307,11 @@ router.post("/profile/work", htmlSanitize, authenticateJWT, async (req, res) => 
   const userDetails = await User.findOne({ _id: req.user.id });
 if(userDetails){
   try {
-    let result = await Review.findOneAndUpdate(
-      { user: req.user.id },
-      {
-        companyName: companyName,
-        positionTitle: positionTitle,
-        companyOffice: companyOffice,
-        department: department
-      },
-      { new: true }
-    );
+    userDetails.companyInfo.companyName=companyName;
+    userDetails.companyInfo.jobTitle=positionTitle;
+    userDetails.companyInfo.department=department;
+    userDetails.companyInfo.officeLocation=companyOffice;
+    await userDetails.save();
     console.log(result)
     res.status(201).json({ message: "Work details updated successfully." });
   } catch (error) {

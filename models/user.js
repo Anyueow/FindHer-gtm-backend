@@ -29,14 +29,25 @@ const userSchema = new Schema({
     type: String,
     // required: true,
   },
-  companyName: {
-    type: String,
-    // required: true,
+  companyInfo: {
+    companyName: {
+      type: String,
+      default: "",
+    },
+    jobTitle: {
+      type: String,
+      default: "",
+    },
+    department: {
+      type: String,
+      default: "",
+    },
+    officeLocation: {
+      type: String,
+      default: "",
+    },
   },
-  jobTitle: {
-    type: String,
-    // required: true,
-  },
+  
   reviewSaved:{
     type:[String],
     default:[]
