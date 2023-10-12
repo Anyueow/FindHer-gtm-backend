@@ -11,143 +11,136 @@ const reviewSchema = new Schema({
     ref: "User",
     required: true,
   },
-  companyName: {
-    type: String,
-    default:""
-  },
-  companyOffice: {
-    type: String,
-    default:""
-  },
-
-  positionTitle: {
-    type: String,
-    default:""
-  },
-  startDate: {
-    type: String,
-    default:""
-  },
-  endDate: {
-    type: String,
-    default:""
-  },
-  industry: {
-    type: String,
-    default:""
-  },
-  department: {
-    type: String,
-    default:""
-  },
-  employementStatus: {
-    type: String,
-    default:""
-  },
-  currworking: {
-    type: Boolean,
-    default:""
-  },
-  features: {
-    firstOne: {
-      type: [String], 
-       default:""
+  reviews: [
+    {
+      companyName: {
+        type: String,
+        default: "",
+      },
+      companyOffice: {
+        type: String,
+        default: "",
+      },
+      positionTitle: {
+        type: String,
+        default: "",
+      },
+      startDate: {
+        type: String,
+        default: "",
+      },
+      endDate: {
+        type: String,
+        default: "",
+      },
+      industry: {
+        type: String,
+        default: "",
+      },
+      department: {
+        type: String,
+        default: "",
+      },
+      employmentStatus: {
+        type: String,
+        default: "",
+      },
+      currworking: {
+        type: Boolean,
+        default: false,
+      },
+      features: {
+        firstOne: [String],
+        setTwo: [String],
+      },
+      ratings: {
+        flexibility: {
+          type: Number,
+          default: 0,
+        },
+        management: {
+          type: Number,
+          default: 0,
+        },
+        coworkers: {
+          type: Number,
+          default: 0,
+        },
+        diversity: {
+          type: Number,
+          default: 0,
+        },
+        safety: {
+          type: Number,
+          default: 0,
+        },
+        compensation: {
+          type: Number,
+          default: 0,
+        },
+      },
+      question1: {
+        question: {
+          type: String,
+          default: "",
+        },
+        answer: {
+          type: String,
+          default: "",
+        },
+      },
+      question2: {
+        question: {
+          type: String,
+          default: "",
+        },
+        answer: {
+          type: String,
+          default: "",
+        },
+      },
+      pageTimings: {
+        firstPageTime: {
+          type: String,
+          default: "",
+        },
+        secondPageTime: {
+          type: String,
+          default: "",
+        },
+        thirdPageTime: {
+          type: String,
+          default: "",
+        },
+        fourthPageTime: {
+          type: String,
+          default: "",
+        },
+      },
+      engagement: {
+        likes: {
+          type: Number,
+          default: 0,
+        },
+        saveCount: {
+          type: Number,
+          default: 0,
+        },
+        pastlike: {
+          type: Number,
+          default: 0,
+        },
+        pastsavecount: {
+          type: Number,
+          default: 0,
+        },
+      },
+      addInfo: {
+        type: String,
+        default: "",
+      },
     },
-    setTwo: {
-      type: [String],
-       default:""
-    },
-  },
-  ratings: {
-    flexibility: {
-      type: Number,
-       default:""
-    },
-    management: {
-      type: Number,
-       default:""
-    },
-    coworkers: {
-      type: Number,
-       default:""
-    },
-    diversity: {
-      type: Number,
-       default:""
-    },
-    safety: {
-      type: Number,
-       default:""
-    },
-    compensation: {
-      type: Number,
-       default:""
-    },
-  },
-  question1: {
-    question: {
-      type: String,
-       default:""
-      // required: true,
-    },
-    answer: {
-      type: String,
-       default:""
-      // required: true,
-    },
-  },
-  question2: {
-    question: {
-      type: String,
-       default:""
-      // required: true,
-    },
-    answer: {
-      type: String,
-       default:""
-      // required: true,
-    },
-  },
-  pageTimings: {
-    firstPageTime: {
-      type: String,
-       default:""
-    },
-    secondPageTime: {
-      type: String,
-       default:""
-    },
-    thirdPageTime: {
-      type: String,
-       default:""
-    },
-    fourthPageTime: {
-      type: String,
-       default:""
-    },
-  },
-  engagement: {
-    likes: {
-      type: Number,
-      default: 0,
-    },
-    saveCount: {
-      type: Number,
-      default: 0,
-    },
-    pastlike:{
-      type: Number,
-      default: 0,
-    },
-    pastsavecount:{
-      type: Number,
-      default: 0,
-    }
-  },
-  addInfo:{
-    type:String,
-    default:""
-  }
+  ],
 });
 
 const Review = mongoose.model("Review", reviewSchema);
