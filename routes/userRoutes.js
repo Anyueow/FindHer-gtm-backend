@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 const SignIn = require("../models/signin");
-
+const Review = require("../models/reviews");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 //const twilio = require("twilio");
@@ -15,24 +15,29 @@ const { generateNumericOTP } = require("../controller/otpGenerator");
 
 router.use(express.json());
 
-const rateLimit = require('express-rate-limit');
+const rateLimit = require("express-rate-limit");
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5, // Limit to 5 requests per windowMs
   handler: (req, res) => {
-    res.status(429).json({ message: "Too many requests, please try again after 15 minutes." });
-  }
+    res
+      .status(429)
+      .json({
+        message: "Too many requests, please try again after 15 minutes.",
+      });
+  },
 });
 
 // POST - Add a new user
 router.post("/register", htmlSanitize, async (req, res) => {
   console.log("holaaa", req.body);
 
-
-  const { email, phoneNumber, password, otp } = req.body;
+  const { email, phoneNumber, password, otp, linkedinUrl, jobDetail } =
+    req.body;
   // Check if the user has filled out everything
-  if (!email || !phoneNumber || !password) {
+  const workDetail = linkedinUrl ? linkedinUrl : jobDetail;
+  if (!email || !phoneNumber || !password || !workDetail) {
     return res.status(400).json({ message: "Please fill out all fields." });
   }
 
@@ -41,17 +46,26 @@ router.post("/register", htmlSanitize, async (req, res) => {
       phoneNumber: phoneNumber,
     });
     if (existingUserPhone) {
-      if (await bcrypt.compare(otp, existingUserPhone.otp )) {
+      if (await bcrypt.compare(otp, existingUserPhone.otp)) {
         // Create new user
+        const dummyReview = new Review({
+          user: existingUserPhone._id,
+        });
+        await dummyReview.save();
         const newUser = new User({
           email: existingUserPhone.email,
           phoneNumber: existingUserPhone.phoneNumber,
           password: existingUserPhone.password,
-          firstName:existingUserPhone.firstName,
-          lastName:existingUserPhone.lastName,
+          firstName: existingUserPhone.firstName,
+          lastName: existingUserPhone.lastName,
+          reviews: dummyReview,
+          linkedinUrl: linkedinUrl ? linkedinUrl : "",
+          companyName: jobDetail ? jobDetail.companyName : "",
+          jobTitle: jobDetail ? jobDetail.jobTitle : "",
         });
         const userReg = await newUser.save();
         // Generate JWT token
+
         const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
           expiresIn: "24h",
         });
@@ -66,7 +80,7 @@ router.post("/register", htmlSanitize, async (req, res) => {
         }
       }
     } else {
-      return res.status(400).json({ message: "Please singin again" });
+      return res.status(200).json({ message: "Please singin again" });
     }
   } catch (error) {
     console.error("Error occurred:", error);
@@ -76,9 +90,10 @@ router.post("/register", htmlSanitize, async (req, res) => {
 
 router.post("/verify", htmlSanitize, async (req, res) => {
   console.log("holaaa", req.body);
-  const { email, phoneNumber, password , firstName, lastName } = req.body;
+  const { email, phoneNumber, password, firstName, lastName } = req.body;
 
   // Check if the user has filled out everything
+
   if (!email || !phoneNumber || !password || !firstName || !lastName) {
     return res.status(400).json({ message: "Please fill out all fields." });
   }
@@ -96,7 +111,7 @@ router.post("/verify", htmlSanitize, async (req, res) => {
     }
 
     const otp = generateNumericOTP(6);
-    console.log(otp)
+    console.log(otp);
     // Create new signin
     const newSignin = new SignIn({
       email,
@@ -112,32 +127,32 @@ router.post("/verify", htmlSanitize, async (req, res) => {
     if (signinReg) {
       const message = `Your FindHer signin verification code is: ${otp}`;
       const numbers = [phoneNumber];
-      const route = 'otp';
+      const route = "otp";
       const variables_values = otp;
 
       const data = new URLSearchParams();
-      data.append('numbers', numbers.join(','));
-      data.append('message', message);
-      data.append('route', route);
-      data.append('variables_values', variables_values);
+      data.append("numbers", numbers.join(","));
+      data.append("message", message);
+      data.append("route", route);
+      data.append("variables_values", variables_values);
 
       const headers = {
-        'authorization':  process.env.Fast2sms_Key,
-        'Content-Type': 'application/x-www-form-urlencoded',
+        authorization: process.env.Fast2sms_Key,
+        "Content-Type": "application/x-www-form-urlencoded",
       };
 
-      const response = await fetch('https://www.fast2sms.com/dev/bulkV2', {
-        method: 'POST',
+      const response = await fetch("https://www.fast2sms.com/dev/bulkV2", {
+        method: "POST",
         headers,
         body: data,
       });
       const result = await response.json();
       if (response.ok) {
-        console.log('SMS sent successfully');
-        res.status(201).json({ message: 'Signin successfully registered.' });
+        console.log("SMS sent successfully");
+        res.status(201).json({ message: "Signin successfully registered." });
       } else {
-        console.error('Failed to send SMS:', result);
-        res.status(500).json({ message: 'Failed to send SMS' });
+        console.error("Failed to send SMS:", result);
+        res.status(500).json({ message: "Failed to send SMS" });
       }
     } else {
       console.error("Error occurred:", error);
@@ -160,7 +175,7 @@ router.post("/verify", htmlSanitize, async (req, res) => {
 });
 
 // POST - Login an existing user
-router.post("/login",htmlSanitize, limiter, async (req, res) => {
+router.post("/login", htmlSanitize, limiter, async (req, res) => {
   const { email, phoneNumber, password } = req.body;
 
   // Check if the user has filled out everything
@@ -179,9 +194,7 @@ router.post("/login",htmlSanitize, limiter, async (req, res) => {
       !existingUser ||
       !(await bcrypt.compare(password, existingUser.password))
     ) {
-      return res
-        .status(400)
-        .json({ message: "Invalid User Id or Password" });
+      return res.status(400).json({ message: "Invalid User Id or Password" });
     }
 
     // Generate JWT token
@@ -199,7 +212,5 @@ router.post("/login",htmlSanitize, limiter, async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 });
-
-
 
 module.exports = router;

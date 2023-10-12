@@ -54,38 +54,75 @@ mongoose.connect(DB, {
 
 
 
+// const corsOptions = {
+//     origin: ['http://localhost:3000', 'https://findher.work'],
+//     credentials: true, // Include this line
+//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//     allowedHeaders: ['Content-Type', 'Authorization' , 'X-CSRF-Token'],
+//     preflightContinue: false  // Add this line
+// };
+
+// app.use(cors(corsOptions));
+// // app.use(cors());
+// // app.options('*', cors(corsOptions));
+// // Enable preflight for all routes
+
+
+
+
+// app.options( (req, res, next) => {
+//     res.header('Access-Control-Allow-Origin', '*');
+//     res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+//     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token');
+//     res.send(200);
+//     next();
+
+// });
+const allowedOrigins = ['http://localhost:3000', 'https://findher.work'];
+
 const corsOptions = {
-    origin: ['http://localhost:3000', 'https://findher.work'],
-    credentials: true, // Include this line
+    origin: function (origin, callback) {
+        // Check if the origin is in the list of allowed origins or if it's a null (e.g., when not set)
+        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: ['Content-Type', 'Authorization' , 'X-CSRF-Token'],
-    preflightContinue: false  // Add this line
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
+    preflightContinue: false,
 };
 
 app.use(cors(corsOptions));
-// app.use(cors());
-// app.options('*', cors(corsOptions));
-// Enable preflight for all routes
 
-
-
-
-app.options( (req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
+app.options((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', allowedOrigins.join(', '));
     res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token');
-    res.send(200);
-    next();
-
+    res.sendStatus(200);
 });
 
+// app.use((req, res, next) => {
+//     if (req.headers['x-forwarded-proto'] !== 'https') {
+//         return res.redirect(`https://${req.hostname}${req.url}`);
+//     }
+//     next();
+// });
 app.use((req, res, next) => {
     if (req.headers['x-forwarded-proto'] !== 'https') {
-        return res.redirect(`https://${req.hostname}${req.url}`);
+        const allowedHostnames = ['findher.work', 'localhost']; //  trusted hostnames
+
+        if (allowedHostnames.includes(req.hostname)) {
+            const secureUrl = `https://${req.hostname}${req.url}`;
+            return res.redirect(secureUrl);
+        } else {
+            return res.status(403).send("Access denied. Invalid hostname.");
+        }
     }
     next();
 });
-
 app.get("/get-csrf-token", csrfProtection, (req, res) => {
     const csrfToken = req.csrfToken();
     console.log(csrfToken)

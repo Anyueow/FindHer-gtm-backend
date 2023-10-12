@@ -9,7 +9,8 @@ router.use(express.json());
 
 async function checkAndInsertJobTitle(item) {
   try {
-    const existingJobTitle = await jobTitle.findOne({ job_title: { $regex: new RegExp(`^${item}$`, 'i') } });
+    const item1 = item.slice(0, 100); 
+    const existingJobTitle = await jobTitle.findOne({ job_title: { $regex: new RegExp(`^${item1}$`, 'i') } });
 
     if (!existingJobTitle){
       const newItem = item.toLowerCase();
@@ -25,7 +26,8 @@ async function checkAndInsertJobTitle(item) {
 }
 async function checkAndInsertDepartment(item) {
   try {
-    const existingDep = await depart.findOne({ department: { $regex: new RegExp(`^${item}$`, 'i') } });
+    const item1 = item.slice(0, 100); 
+    const existingDep = await depart.findOne({ department: { $regex: new RegExp(`^${item1}$`, 'i') } });
 
     if (!existingDep){
       const newItem = item.toLowerCase();
@@ -167,7 +169,8 @@ router.post('/jobTitleList', htmlSanitize, async (req, res) => {
   const {inputTitle} = req.body;
 
   try {
-    const regex = new RegExp(`^${inputTitle}`, 'i'); 
+    const item1 = inputTitle.slice(0, 100); 
+    const regex = new RegExp(`^${item1}`, 'i'); 
     const matchingJobTitles = await jobTitle.find({ job_title: { $regex: regex } }).limit(5);;
 
     res.json({ matchingJobTitles });
@@ -180,7 +183,8 @@ router.post('/jobDepList', htmlSanitize, async (req, res) => {
   const {inputDep} = req.body;
 
   try {
-    const regex = new RegExp(`^${inputDep}`, 'i'); 
+    const item1 = inputDep.slice(0, 100); 
+    const regex = new RegExp(`^${item1}`, 'i'); 
     const matchingDep = await depart.find({ department: { $regex: regex } }).limit(5);;
 
     res.json({ matchingDep });

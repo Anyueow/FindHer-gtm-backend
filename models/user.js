@@ -25,6 +25,18 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  linkedinUrl: {
+    type: String,
+    // required: true,
+  },
+  companyName: {
+    type: String,
+    // required: true,
+  },
+  jobTitle: {
+    type: String,
+    // required: true,
+  },
   reviewSaved:{
     type:[String],
     default:[]
