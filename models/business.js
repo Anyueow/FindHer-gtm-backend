@@ -1,83 +1,64 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-const bcrypt = require("bcryptjs");
 
-const locationSchema = new Schema({
-
-  HQ: {
+const locationSchema = new mongoose.Schema({
+  hq: {
     type: String,
   },
-  otherLocations: [
-    {
-      type: String,
-    },
-  ],
+  offices: {
+    type: [String],
+  }
 });
 
-// locationSchema.pre("save", async function (next) {
-//   if (!this.isModified("password")) {
-//     return next();
-//   }
-//   try {
-//     const salt = await bcrypt.genSalt(10);
-//     this.password = await bcrypt.hash(this.password, salt);
-//     return next();
-//   } catch (err) {
-//     return next(err);
-//   }
-// });
-
-// locationSchema.methods.comparePassword = async function (password) {
-//   return bcrypt.compare(password, this.password);
-// };
-
-const businessSchema = new Schema({
+const businessSchema = new mongoose.Schema({
   companyName: {
     type: String,
-    unique: true,
   },
-  personName: {
+  name: {
     type: String,
   },
-  personEmail: {
+  email: {
     type: String,
   },
-  websiteLink: {
+  website: {
     type: String,
   },
-  employeesCount: {
+  organizationSize: {
     type: String,
   },
-  industryType: {
+  industry: {
     type: String,
   },
-  aboutUs: {
+  overview: {
     type: String,
   },
-  requirements: {
+  hiring: {
     type: String,
   },
-  lifeAtWork: {
+  culture: {
     type: String,
   },
-  whyUS: {
+  topChoice: {
     type: String,
   },
-  moreDetails: {
+  policies: {
     type: String,
   },
-  amenities: [
-    {
-      type: String,
-    },
-  ],
-  programs: [
-    {
-      type: String,
-    },
-  ],
-  locations: [locationSchema],
+  addInfo: {
+    type: String,
+  },
+  more: {
+    type: String,
+  },
+  workplaceOffers:[],
+  otherSpecify: {
+    type: String,
+  },
+  locations: {
+    type: locationSchema,
+    _id: false, 
+  },
 });
 
-const Business = mongoose.model("BUSINESS", businessSchema);
+const Business = mongoose.model("Business", businessSchema);
+
 module.exports = Business;

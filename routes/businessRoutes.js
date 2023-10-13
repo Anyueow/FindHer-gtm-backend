@@ -188,11 +188,12 @@ router.put(
 
 
 router.post("/business/register", htmlSanitize, async (req, res) => {
+  console.log("/business/register")
   try {
 
-    const { companyName, personName, personEmail, websiteLink, employeesCount, industryType, aboutUs, requirements, lifeAtWork, whyUS, moreDetails, amenities, programs, locations } = req.body;
+    const {companyName, name, email, website, hq, offices, organizationSize, industry, overview, hiring, culture, policies, addInfo, more, workplaceOffers,otherSpecify } = req.body;
 
-    if (!companyName || !personName || !personEmail || !websiteLink || !employeesCount || !industryType || !aboutUs || !requirements || !lifeAtWork || !whyUS || !moreDetails || !amenities || !programs || !locations || !locations.HQ) {
+    if (!companyName || !name || !email || !website || !hq || !offices || !organizationSize || !industry || !overview || !hiring || !culture || !policies || !addInfo || !more ) {
       return res.status(400).json({
         status: "error",
         message: "Please fill out all the fields.",
@@ -202,24 +203,25 @@ router.post("/business/register", htmlSanitize, async (req, res) => {
     
     const newBusiness = new Business({
       companyName: companyName,
-      personName: personName,
-      personEmail: personEmail,
-      websiteLink: websiteLink,
-      employeesCount: employeesCount,
-      industryType: industryType,
-      aboutUs: aboutUs,
-      requirements: requirements,
-      lifeAtWork: lifeAtWork,
-      whyUS: whyUS,
-      moreDetails: moreDetails,
-      amenities: amenities,
-      programs: programs,
-      locations: [
+      name: name,
+      email: email,
+      website: website,
+      organizationSize: organizationSize,
+      industry: industry,
+      overview: overview,
+      hiring: hiring,
+      culture: culture,
+      topChoice: topChoice,
+      policies: policies,
+      addInfo: addInfo,
+      more: more,
+      workplaceOffers:workplaceOffers,
+      otherSpecify:otherSpecify,
+      locations: 
         {
-          HQ: locations.HQ,
-          otherLocations: locations.otherLocations || [], // Make otherLocations an empty array if not provided
+          hq: hq,
+          offices: offices ? offices.split(',').map((office) => office.trim()) : []
         },
-      ],
     });
 
     await newBusiness.save();
