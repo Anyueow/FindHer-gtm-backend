@@ -199,8 +199,11 @@ router.post("/business/register", htmlSanitize, async (req, res) => {
         message: "Please fill out all the fields.",
       });
     }
-    
-    
+
+  const workplaceOffersArray = Object.entries(workplaceOffers)
+  .filter(([key, value]) => value === true)
+  .map(([key, value]) => key);
+  
     const newBusiness = new Business({
       companyName: companyName,
       name: name,
@@ -211,11 +214,10 @@ router.post("/business/register", htmlSanitize, async (req, res) => {
       overview: overview,
       hiring: hiring,
       culture: culture,
-      topChoice: topChoice,
       policies: policies,
       addInfo: addInfo,
       more: more,
-      workplaceOffers:workplaceOffers,
+      workplaceOffers: workplaceOffersArray,
       otherSpecify:otherSpecify,
       locations: 
         {
