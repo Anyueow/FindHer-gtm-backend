@@ -135,6 +135,7 @@ app.use(require("./routes/reviewRoutes"));
 app.use(require("./routes/businessRoutes"));
 app.use(require("./routes/NewsLetterRoutes"));
 app.use(require("./routes/profileRoutes"));
+app.use(require("./routes/guestRoutes"));
 
 // Other middleware
 app.use('/protectedRoute', authenticateJWT);
