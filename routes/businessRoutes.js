@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const Business = require("../models/business");
-const BusinessJoinNow = require("../models/businessJoinNow");
+const GuestBusinness  = require("../models/GuestBusinness ");
 const htmlSanitize = require("../middleware/htmlSanitize");
 const router = express.Router();
 router.use(express.json());
@@ -28,7 +28,7 @@ router.post("/business/joinnow", htmlSanitize, async (req, res) => {
       });
     }
     
-    const newBusiness = new BusinessJoinNow({
+    const newBusiness = new GuestBusinness ({
       name: name,
       email:email,
       companyName: companyName,

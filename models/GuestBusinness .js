@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const BusinessJoinNowSchema = new Schema({
+const GuestBusinnessSchema = new Schema({
   email: {
     type: String,
     required: true,
@@ -20,5 +20,5 @@ const BusinessJoinNowSchema = new Schema({
 
 
 
-const BusinessJoinNow = mongoose.model("BusinessJoinNow", BusinessJoinNowSchema);
-module.exports = BusinessJoinNow;
+const GuestBusinness  = mongoose.model("GuestBusinness ", GuestBusinnessSchema );
+module.exports = GuestBusinness;
