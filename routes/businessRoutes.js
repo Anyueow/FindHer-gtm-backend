@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const Business = require("../models/business");
+const BusinessJoinNow = require("../models/businessJoinNow");
 const htmlSanitize = require("../middleware/htmlSanitize");
 const router = express.Router();
 router.use(express.json());
@@ -16,40 +17,39 @@ const port = process.env.PORT || 3000;
 //   useUnifiedTopology: true,
 // });
 
-// router.post("/business/register", htmlSanitize, async (req, res) => {
-//   try {
-//     const { name, location ,industry,summary} = req.body;
-//     console.log(req.body,"gg");
-//     if (!name || !industry || !summary || !location || !location.zipCode ) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "Business name and zip code are required.",
-//       });
-//     }
+router.post("/business/joinnow", htmlSanitize, async (req, res) => {
+  try {
+    const { name, companyName ,email} = req.body;
+    console.log(req.body,"gg");
+    if (!name || !companyName || !email ) {
+      return res.status(400).json({
+        status: "error",
+        message: "Business name and zip code are required.",
+      });
+    }
     
-//     const newBusiness = new Business({
-//       name: name,
-//       locations: [location],
-//       industry:industry,
-//       summary: summary
-//     });
+    const newBusiness = new BusinessJoinNow({
+      name: name,
+      email:email,
+      companyName: companyName,
+    });
 
-//     await newBusiness.save();
+    await newBusiness.save();
 
-//     return res.status(201).json({
-//       status: "success",
-//       message: "Business registered successfully.",
-//       businessId: newBusiness._id,
-//     });
-//   } catch (error) {
-//     console.error(error);
+    return res.status(201).json({
+      status: "success",
+      message: "Business registered successfully.",
+      businessId: newBusiness._id,
+    });
+  } catch (error) {
+    console.error(error);
 
-//     return res.status(500).json({
-//       status: "error",
-//       message: "Server error.",
-//     });
-//   }
-// });
+    return res.status(500).json({
+      status: "error",
+      message: "Server error.",
+    });
+  }
+});
 
 router.put("/business/update/email/:businessId", async (req, res) => {
   try {
