@@ -92,7 +92,7 @@ const corsOptions = {
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
-    preflightContinue: false,
+    preflightContinue: true,
 };
 
 app.use(cors(corsOptions));
