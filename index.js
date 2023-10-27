@@ -145,28 +145,28 @@ app.use(express.json());
 app.get("/", (req, res) => {
     const protocol = req.protocol; // Will be 'http' or 'https'
     console.log('Protocol:', protocol);
-    res.send("Welcome to my funeral Auto Auto " + protocol);
+    res.send("Checking protocol" + protocol);
 })
 
 app.get("/about", (req, res) => {
-    console.log("It wokrs");
-    res.send("Ugh buck buck bitch whatcha about");
+    console.log("Checking");
+    res.send("Passed");
 })
 
 app.get("/contact", (req, res) => {
-    res.send("Talk to me buck buck bitch");
+    res.send("passed");
 })
 
 app.get("/signin", (req, res) => {
-    res.send("signin u lil shit ");
+    res.send("passed");
 })
 
 app.get("/signup", (req, res) => {
-    res.send("sign up boo ");
+    res.send("passed");
 })
 
 
-console.log("work, u whore!");
+console.log("Connection successful!");
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
