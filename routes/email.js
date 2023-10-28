@@ -1,41 +1,37 @@
-const express = require("express");
-const router = express.Router();
+const express = require('express');
 const nodemailer = require('nodemailer');
-const { sendMail } = require("../controller/SendMail");
+const router = express.Router();
 
-router.use(express.json());
+router.post('/send-alert-email', async (req, res) => {
+    // Here, 'req.body' contains your form data
+    const { name, companyName, email } = req.body;
 
-router.post('/send-email', async (req, res) => {
-
+    // Create a transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
-                                                     host: "smtp.google.com", // SMTP hosts are usually lowercase, consider changing "SMTP.GOOGLE.COM" to "smtp.google.com"
-                                                     port: 587,
-                                                     secure: false, // true for 465, false for other ports
+                                                     service: "gmail",
                                                      auth: {
-                                                         user: process.env.EMAIL_USER, // use environment variable
-                                                         pass: process.env.EMAIL_PASS, // use environment variable
+                                                         user: "tech@findher.work",
+                                                         pass: process.env.Email_Key,
                                                      },
                                                  });
 
-    // Validate the request body to ensure that 'to', 'subject', and 'html' are provided.
-    // This is a basic validation example. Consider using a library like 'joi' for more robust validation.
-    if (!req.body.to || !req.body.subject || !req.body.html) {
-        return res.status(400).send({ error: "Missing required fields" });
-    }
-
-    let mailOptions = {
-        from: process.env.EMAIL_USER, // use environment variable or ensure 'from' address is valid
-        to: req.body.to,
-        subject: req.body.subject,
-        html: req.body.html,
+    // Message object
+    let message = {
+        from: 'tech@findher.work',
+        to: 'info@findher.work', // where you want to receive the emails
+        subject: 'New Form Submission',
+        text: `New submission from ${name} at ${companyName} - ${email}`, // plain text body
+        // html: "<p>HTML version of the message</p>" // html body (optional)
     };
 
     try {
-        let info = await transporter.sendMail(mailOptions);
-        res.send({ message: "Email sent", messageId: info.messageId });
+        // Send email
+        let info = await transporter.sendMail(message);
+        console.log('Message sent: %s', info.messageId);
+        res.status(200).send('Email sent successfully!');
     } catch (error) {
-        console.error("Error sending email: ", error);
-        res.status(500).send({ error: "Failed to send email" }); // Consider not exposing detailed server errors to the frontend
+        console.error('Error sending email: ', error);
+        res.status(500).send('Error sending email.');
     }
 });
 

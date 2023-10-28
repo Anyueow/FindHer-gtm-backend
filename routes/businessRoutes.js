@@ -24,7 +24,7 @@ router.post("/business/joinnow", htmlSanitize, async (req, res) => {
     if (!name || !companyName || !email ) {
       return res.status(400).json({
         status: "error",
-        message: "Business name and zip code are required.",
+        message: "Please fill out all fields",
       });
     }
     
