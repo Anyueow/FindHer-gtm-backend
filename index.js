@@ -3,10 +3,16 @@ const mongoose = require('mongoose');
 const express = require('express');
 const cors = require("cors");
 const authenticateJWT = require('./middleware/auth');
+const xss = require('xss-clean');
+const mongoSanitize = require('express-mongo-sanitize');
+const cookieParser = require('cookie-parser');
+const csrf = require('csurf');
+const htmlSanitize = require("./middleware/htmlSanitize");
+const helmet = require('helmet');
 
 const app= express();
 
-
+app.use(cookieParser());
 
 dotenv.config({ path: "./config.env"});
 const DB= process.env.DATABASE;
