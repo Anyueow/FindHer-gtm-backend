@@ -105,25 +105,25 @@ app.options((req, res, next) => {
     res.sendStatus(200);
 });
 
-// app.use((req, res, next) => {
-//     if (req.headers['x-forwarded-proto'] !== 'https') {
-//         return res.redirect(`https://${req.hostname}${req.url}`);
-//     }
-//     next();
-// });
 app.use((req, res, next) => {
-    if (req.method !== 'OPTIONS' &&  req.headers['x-forwarded-proto'] !== 'https') {
-        const allowedHostnames = ['findher.work', 'localhost']; //  trusted hostnames
-
-        if (allowedHostnames.includes(req.hostname)) {
-            const secureUrl = `https://${req.hostname}${req.url}`;
-            return res.redirect(secureUrl);
-        } else {
-            return res.status(403).send("Access denied. Invalid hostname.");
-        }
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+        return res.redirect(`https://${req.hostname}${req.url}`);
     }
     next();
 });
+// app.use((req, res, next) => {
+//     if (req.method !== 'OPTIONS' &&  req.headers['x-forwarded-proto'] !== 'https') {
+//         const allowedHostnames = ['findher.work', 'localhost']; //  trusted hostnames
+
+//         if (allowedHostnames.includes(req.hostname)) {
+//             const secureUrl = `https://${req.hostname}${req.url}`;
+//             return res.redirect(secureUrl);
+//         } else {
+//             return res.status(403).send("Access denied. Invalid hostname.");
+//         }
+//     }
+//     next();
+// });
 app.get("/get-csrf-token", csrfProtection, (req, res) => {
     const csrfToken = req.csrfToken();
     console.log(csrfToken)
