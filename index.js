@@ -33,7 +33,6 @@ const corsOptions = {
     preflightContinue: true  // Add this line
 };
 
-// app.use(cors({ origin: "*" }));
  app.use(cors(corsOptions));
 
 app.use((req, res, next) => {
@@ -57,7 +56,13 @@ app.use((req, res, next) => {
     if (req.path === '/get-csrf-token') {
       return next();
     }
-    csrfProtection(req, res, next);
+    csrfProtection(req, res, (err) => {
+        if (err) {
+            console.error('CSRF Protection Middleware - Error:', err);
+        }
+        console.log('CSRF Protection Middleware - Response:', res);
+        next(err);
+    });
   });
 
   app.get("/get-csrf-token", csrfProtection, (req, res) => {
@@ -119,7 +124,7 @@ app.get("/signup", (req, res) => {
 
 console.log("work u whore");
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
