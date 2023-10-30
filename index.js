@@ -13,6 +13,7 @@ const helmet = require('helmet');
 const app= express();
 
 app.use(cookieParser());
+app.use(cookieParser('X-CSRF-Token', { sameSite: 'none' }));
 
 dotenv.config({ path: "./config.env"});
 const DB= process.env.DATABASE;
