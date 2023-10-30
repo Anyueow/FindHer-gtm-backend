@@ -13,10 +13,10 @@ const helmet = require('helmet');
 const app= express();
 
 // Apply cookie-parser middleware
-app.use(cookieParser());
+// app.use(cookieParser());
 
 // Create and configure CSRF protection middleware
-const csrfProtection = csrf({ cookie: true });
+// const csrfProtection = csrf({ cookie: true });
 
 // app.use(csrfProtection);
 // app.use((req, res, next) => {
@@ -48,10 +48,6 @@ mongoose.connect(DB, {
 }).then(() => {
     console.log("Connection to DB success!");
 }).catch((err) => console.log(err));
-
-
-
-
 
 
 // const corsOptions = {
