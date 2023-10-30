@@ -18,12 +18,24 @@ app.use(cookieParser());
 const csrfProtection = csrf({ cookie: true });
 
 // app.use(csrfProtection);
-app.use((req, res, next) => {
-    if (req.path === '/get-csrf-token') {
-      return next(); // Skip CSRF protection for the login route
-    }
-    csrfProtection(req, res, next);
-  });
+// app.use((req, res, next) => {
+//     if (req.path === '/get-csrf-token') {
+//       return next(); // Skip CSRF protection for the login route
+//     }
+//     csrfProtection(req, res, next);
+//   });
+
+// Sanitization against cross-site scripting (xss-clean)
+app.use(xss());
+
+app.use(helmet());
+
+// Sanitization against NoSQL injection
+app.use(mongoSanitize());
+
+
+// Apply the htmlSanitizeMiddleware to all routes
+app.use(htmlSanitize);
 
 dotenv.config({ path: "./config.env"});
 const DB= process.env.DATABASE;
