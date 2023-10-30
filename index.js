@@ -23,18 +23,18 @@ app.use((req, res, next) => {
     if (req.path === '/get-csrf-token') {
       return next(); // Skip CSRF protection for the login route
     }
-    csrfProtection(req, res, next);
+   // csrfProtection(req, res, next);
   });
 
 
 
 // Sanitization against cross-site scripting (xss-clean)
-app.use(xss());
+// app.use(xss());
 
-app.use(helmet());
+// app.use(helmet());
 
 // Sanitization against NoSQL injection
-app.use(mongoSanitize());
+// app.use(mongoSanitize());
 
 
 // Apply the htmlSanitizeMiddleware to all routes
@@ -54,15 +54,15 @@ mongoose.connect(DB, {
 
 
 
-const corsOptions = {
-    origin: ['http://localhost:3000', 'https://findher.work'],
-    credentials: true, // Include this line
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: ['Content-Type', 'Authorization' , 'X-CSRF-Token'],
-    preflightContinue: true  // Add this line
-};
+// const corsOptions = {
+//     origin: ['http://localhost:3000', 'https://findher.work'],
+//     credentials: true, // Include this line
+//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//     allowedHeaders: ['Content-Type', 'Authorization' , 'X-CSRF-Token'],
+//     preflightContinue: true  // Add this line
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 // app.use(cors());
 // app.options('*', cors(corsOptions));
 // Enable preflight for all routes
@@ -70,21 +70,21 @@ app.use(cors(corsOptions));
 
 
 
-app.options( (req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token');
-    res.send(200);
-    next();
+// app.options( (req, res, next) => {
+//     res.header('Access-Control-Allow-Origin', '*');
+//     res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+//     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token');
+//     res.send(200);
+//     next();
 
-});
+// });
 
-app.use((req, res, next) => {
-    if (req.headers['x-forwarded-proto'] !== 'https') {
-        return res.redirect(`https://${req.hostname}${req.url}`);
-    }
-    next();
-});
+// app.use((req, res, next) => {
+//     if (req.headers['x-forwarded-proto'] !== 'https') {
+//         return res.redirect(`https://${req.hostname}${req.url}`);
+//     }
+//     next();
+// });
 
 app.get("/get-csrf-token", csrfProtection, (req, res) => {
     const csrfToken = req.csrfToken();
