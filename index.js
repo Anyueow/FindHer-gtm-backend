@@ -14,18 +14,6 @@ const app= express();
 
 app.use(cookieParser());
 
-// Sanitization against cross-site scripting (xss-clean)
-app.use(xss());
-
-app.use(helmet());
-
-// Sanitization against NoSQL injection
-app.use(mongoSanitize());
-
-
-// Apply the htmlSanitizeMiddleware to all routes
-app.use(htmlSanitize);
-
 dotenv.config({ path: "./config.env"});
 const DB= process.env.DATABASE;
 mongoose.connect(DB, {
@@ -46,15 +34,6 @@ const corsOptions = {
 
 // app.use(cors({ origin: "*" }));
  app.use(cors(corsOptions));
-
-// app.options( (req, res, next) => {
-//     res.header('Access-Control-Allow-Origin', '*');
-//     res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
-//     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-//     res.send(200);
-//     next();
-
-// });
 
 app.use((req, res, next) => {
     if (req.headers['x-forwarded-proto'] !== 'https') {
@@ -87,6 +66,18 @@ app.use((req, res, next) => {
     res.json({ csrfToken });
   });
 
+ 
+// Sanitization against cross-site scripting (xss-clean)
+app.use(xss());
+
+app.use(helmet());
+
+// Sanitization against NoSQL injection
+app.use(mongoSanitize());
+
+
+// Apply the htmlSanitizeMiddleware to all routes
+app.use(htmlSanitize);
 
 
 // routes
