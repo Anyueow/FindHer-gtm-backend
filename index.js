@@ -54,13 +54,13 @@ mongoose.connect(DB, {
 
 
 
-// const corsOptions = {
-//     origin: ['http://localhost:3000', 'https://findher.work'],
-//     credentials: true, // Include this line
-//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-//     allowedHeaders: ['Content-Type', 'Authorization' , 'X-CSRF-Token'],
-//     preflightContinue: false  // Add this line
-// };
+const corsOptions = {
+    origin: ['http://localhost:3000', 'https://findher.work'],
+    credentials: true, // Include this line
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: ['Content-Type', 'Authorization' , 'X-CSRF-Token'],
+    preflightContinue: false  // Add this line
+};
 
 // app.use(cors(corsOptions));
 // // app.use(cors());
@@ -78,23 +78,23 @@ mongoose.connect(DB, {
 //     next();
 
 // });
-const allowedOrigins = ['http://localhost:3000', 'https://findher.work'];
+// const allowedOrigins = ['http://localhost:3000', 'https://findher.work'];
 
-const corsOptions = {
-    origin: function (origin, callback) {
-        // Check if the origin is in the list of allowed origins or if it's a null (e.g., when not set)
-        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-            callback(null, true);
-        } else {
-            console.log("Cors issue in coors")
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
-    preflightContinue: false,
-};
+// const corsOptions = {
+//     origin: function (origin, callback) {
+//         // Check if the origin is in the list of allowed origins or if it's a null (e.g., when not set)
+//         if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+//             callback(null, true);
+//         } else {
+//             console.log("Cors issue in coors")
+//             callback(new Error('Not allowed by CORS'));
+//         }
+//     },
+//     credentials: true,
+//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//     allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
+//     preflightContinue: false,
+// };
 
 app.use(cors(corsOptions));
 
