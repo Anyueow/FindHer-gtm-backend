@@ -61,10 +61,6 @@ const corsOptions = {
 
 // app.use(cors({ origin: "*" }));
  app.use(cors(corsOptions));
-// app.options('*', cors(corsOptions));
-// // Enable preflight for all routes
-
-
 
 // app.options( (req, res, next) => {
 //     res.header('Access-Control-Allow-Origin', '*');
@@ -76,8 +72,15 @@ const corsOptions = {
 // });
 
 app.use((req, res, next) => {
-    if (req.headers['x-forwarded-proto'] !== 'https') {
-        return res.redirect(`https://${req.hostname}${req.url}`);
+    if (req.method !== 'OPTIONS' &&  req.headers['x-forwarded-proto'] !== 'https') {
+        const allowedHostnames = ['findher.work', 'localhost']; //  trusted hostnames
+
+        if (allowedHostnames.includes(req.hostname)) {
+            const secureUrl = `https://${req.hostname}${req.url}`;
+            return res.redirect(secureUrl);
+        } else {
+            return res.status(403).send("Access denied. Invalid hostname.");
+        }
     }
     next();
 });
