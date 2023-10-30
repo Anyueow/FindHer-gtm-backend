@@ -23,15 +23,15 @@ mongoose.connect(DB, {
 
 
 const corsOptions = {
-    origin: 'http://localhost:3003',
+    origin: 'https://findher.work',
     credentials: true, // Include this line
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
     preflightContinue: false  // Add this line
 };
 
-app.use(cors({ origin: "*" }));
-// app.use(cors(corsOptions));
+// app.use(cors({ origin: "*" }));
+ app.use(cors(corsOptions));
 // app.options('*', cors(corsOptions));
 // // Enable preflight for all routes
 
@@ -58,6 +58,11 @@ app.use((req, res, next) => {
 // routes
 app.use(require("./routes/userRoutes"));
 app.use(require("./routes/reviewRoutes"));
+app.use(require("./routes/businessRoutes"));
+app.use(require("./routes/NewsLetterRoutes"));
+app.use(require("./routes/profileRoutes"));
+app.use(require("./routes/guestRoutes"));
+app.use(require("./routes/email"));
 
 // Other middleware
 app.use(express.json());
