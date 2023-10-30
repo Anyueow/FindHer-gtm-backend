@@ -14,6 +14,17 @@ const app= express();
 
 app.use(cookieParser());
 
+// Create and configure CSRF protection middleware
+const csrfProtection = csrf({ cookie: true });
+
+// app.use(csrfProtection);
+app.use((req, res, next) => {
+    if (req.path === '/get-csrf-token') {
+      return next(); // Skip CSRF protection for the login route
+    }
+    csrfProtection(req, res, next);
+  });
+
 dotenv.config({ path: "./config.env"});
 const DB= process.env.DATABASE;
 mongoose.connect(DB, {
