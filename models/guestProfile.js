@@ -73,5 +73,5 @@ const guestSchema = new Schema({
 
 
 
-const GuestProfile = mongoose.model("guest", guestSchema);
+const GuestProfile = mongoose.model("guestProfile", guestSchema);
 module.exports = GuestProfile;
