@@ -52,7 +52,6 @@ app.use((req, res, next) => {
 // Create and configure CSRF protection middleware
 const csrfProtection = csrf({ cookie: true });
 
-app.use(csrfProtection);
 app.use((req, res, next) => {
     if (req.path === '/get-csrf-token') {
       return next();
