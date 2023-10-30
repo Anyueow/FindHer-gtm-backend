@@ -13,7 +13,6 @@ const helmet = require('helmet');
 const app= express();
 
 app.use(cookieParser());
-app.use(cookieParser('X-CSRF-Token', { sameSite: 'none' }));
 
 dotenv.config({ path: "./config.env"});
 const DB= process.env.DATABASE;
@@ -23,6 +22,28 @@ mongoose.connect(DB, {
 }).then(() => {
     console.log("Connection to DB success!");
 }).catch((err) => console.log(err));
+
+// Create and configure CSRF protection middleware
+const csrfProtection = csrf({ cookie: true });
+
+app.use((req, res, next) => {
+    if (req.path === '/get-csrf-token') {
+      return next();
+    }
+    csrfProtection(req, res, (err) => {
+        if (err) {
+            console.error('CSRF Protection Middleware - Error:', err);
+        }
+        // console.log('CSRF Protection Middleware - Response:', res);
+        next();
+    });
+  });
+
+  app.get("/get-csrf-token", csrfProtection, (req, res) => {
+    const csrfToken = req.csrfToken();
+    console.log(csrfToken)
+    res.json({ csrfToken });
+  });
 
 
 const corsOptions = {
@@ -49,28 +70,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// Create and configure CSRF protection middleware
-const csrfProtection = csrf({ cookie: true });
-
-app.use((req, res, next) => {
-    if (req.path === '/get-csrf-token') {
-      return next();
-    }
-    csrfProtection(req, res, (err) => {
-        if (err) {
-            console.error('CSRF Protection Middleware - Error:', err);
-        }
-        console.log('CSRF Protection Middleware - Response:', res);
-        next(err);
-    });
-  });
-
-  app.get("/get-csrf-token", csrfProtection, (req, res) => {
-    const csrfToken = req.csrfToken();
-    console.log(csrfToken)
-    res.json({ csrfToken });
-  });
-
  
 // Sanitization against cross-site scripting (xss-clean)
 app.use(xss());
@@ -82,7 +81,7 @@ app.use(mongoSanitize());
 
 
 // Apply the htmlSanitizeMiddleware to all routes
-app.use(htmlSanitize);
+// app.use(htmlSanitize);
 
 
 // routes
