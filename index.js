@@ -14,23 +14,6 @@ const app= express();
 
 app.use(cookieParser());
 
-// Create and configure CSRF protection middleware
-const csrfProtection = csrf({ cookie: true });
-
-app.use(csrfProtection);
-app.use((req, res, next) => {
-    if (req.path === '/get-csrf-token') {
-      return next();
-    }
-    csrfProtection(req, res, next);
-  });
-
-  app.get("/get-csrf-token", csrfProtection, (req, res) => {
-    const csrfToken = req.csrfToken();
-    console.log(csrfToken)
-    res.json({ csrfToken });
-  });
-
 // Sanitization against cross-site scripting (xss-clean)
 app.use(xss());
 
@@ -53,16 +36,12 @@ mongoose.connect(DB, {
 }).catch((err) => console.log(err));
 
 
-
-
-
-
 const corsOptions = {
     origin: 'https://findher.work',
     credentials: true, // Include this line
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
-    preflightContinue: false  // Add this line
+    preflightContinue: true  // Add this line
 };
 
 // app.use(cors({ origin: "*" }));
@@ -91,6 +70,22 @@ app.use((req, res, next) => {
     next();
 });
 
+// Create and configure CSRF protection middleware
+const csrfProtection = csrf({ cookie: true });
+
+app.use(csrfProtection);
+app.use((req, res, next) => {
+    if (req.path === '/get-csrf-token') {
+      return next();
+    }
+    csrfProtection(req, res, next);
+  });
+
+  app.get("/get-csrf-token", csrfProtection, (req, res) => {
+    const csrfToken = req.csrfToken();
+    console.log(csrfToken)
+    res.json({ csrfToken });
+  });
 
 
 
