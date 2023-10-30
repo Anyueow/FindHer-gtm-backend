@@ -112,7 +112,7 @@ app.options((req, res, next) => {
 //     next();
 // });
 app.use((req, res, next) => {
-    if (req.headers['x-forwarded-proto'] !== 'https') {
+    if (req.method !== 'OPTIONS' &&  req.headers['x-forwarded-proto'] !== 'https') {
         const allowedHostnames = ['findher.work', 'localhost']; //  trusted hostnames
 
         if (allowedHostnames.includes(req.hostname)) {
