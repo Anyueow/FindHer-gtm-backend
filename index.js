@@ -17,14 +17,20 @@ app.use(cookieParser());
 // Create and configure CSRF protection middleware
 const csrfProtection = csrf({ cookie: true });
 
-// app.use(csrfProtection);
-// app.use((req, res, next) => {
-//     if (req.path === '/get-csrf-token') {
-//       return next(); // Skip CSRF protection for the login route
-//     }
-//     csrfProtection(req, res, next);
-//   });
+app.use(csrfProtection);
+app.use((req, res, next) => {
+    if (req.path === '/get-csrf-token') {
+      return next(); // Skip CSRF protection for the login route
+    }
+    csrfProtection(req, res, next);
+  });
 
+  app.get("/get-csrf-token", csrfProtection, (req, res) => {
+    const csrfToken = req.csrfToken();
+    console.log(csrfToken)
+    res.json({ csrfToken });
+  });
+  
 // Sanitization against cross-site scripting (xss-clean)
 app.use(xss());
 
@@ -84,6 +90,7 @@ app.use((req, res, next) => {
     }
     next();
 });
+
 
 
 
