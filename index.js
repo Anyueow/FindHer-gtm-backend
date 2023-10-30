@@ -20,7 +20,7 @@ const csrfProtection = csrf({ cookie: true });
 app.use(csrfProtection);
 app.use((req, res, next) => {
     if (req.path === '/get-csrf-token') {
-      return next(); // Skip CSRF protection for the login route
+      return next();
     }
     csrfProtection(req, res, next);
   });
@@ -30,7 +30,7 @@ app.use((req, res, next) => {
     console.log(csrfToken)
     res.json({ csrfToken });
   });
-  
+
 // Sanitization against cross-site scripting (xss-clean)
 app.use(xss());
 
@@ -78,7 +78,7 @@ const corsOptions = {
 // });
 
 app.use((req, res, next) => {
-    if (req.method !== 'OPTIONS' &&  req.headers['x-forwarded-proto'] !== 'https') {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
         const allowedHostnames = ['findher.work', 'localhost']; //  trusted hostnames
 
         if (allowedHostnames.includes(req.hostname)) {
