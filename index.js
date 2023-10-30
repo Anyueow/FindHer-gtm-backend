@@ -62,48 +62,22 @@ const corsOptions = {
     preflightContinue: false  // Add this line
 };
 
-// app.use(cors(corsOptions));
-// // app.use(cors());
-// // app.options('*', cors(corsOptions));
-// // Enable preflight for all routes
-
-
-
-
-// app.options( (req, res, next) => {
-//     res.header('Access-Control-Allow-Origin', '*');
-//     res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
-//     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token');
-//     res.send(200);
-//     next();
-
-// });
-// const allowedOrigins = ['http://localhost:3000', 'https://findher.work'];
-
-// const corsOptions = {
-//     origin: function (origin, callback) {
-//         // Check if the origin is in the list of allowed origins or if it's a null (e.g., when not set)
-//         if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-//             callback(null, true);
-//         } else {
-//             console.log("Cors issue in coors")
-//             callback(new Error('Not allowed by CORS'));
-//         }
-//     },
-//     credentials: true,
-//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-//     allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
-//     preflightContinue: false,
-// };
-
 app.use(cors(corsOptions));
+// app.use(cors());
+// app.options('*', cors(corsOptions));
+// Enable preflight for all routes
 
-// app.options((req, res, next) => {
-//     res.header('Access-Control-Allow-Origin', allowedOrigins.join(', '));
-//     res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
-//     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token');
-//     res.sendStatus(200);
-// });
+
+
+
+app.options( (req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token');
+    res.send(200);
+    next();
+
+});
 
 app.use((req, res, next) => {
     if (req.headers['x-forwarded-proto'] !== 'https') {
@@ -111,19 +85,7 @@ app.use((req, res, next) => {
     }
     next();
 });
-// app.use((req, res, next) => {
-//     if (req.method !== 'OPTIONS' &&  req.headers['x-forwarded-proto'] !== 'https') {
-//         const allowedHostnames = ['findher.work', 'localhost']; //  trusted hostnames
 
-//         if (allowedHostnames.includes(req.hostname)) {
-//             const secureUrl = `https://${req.hostname}${req.url}`;
-//             return res.redirect(secureUrl);
-//         } else {
-//             return res.status(403).send("Access denied. Invalid hostname.");
-//         }
-//     }
-//     next();
-// });
 app.get("/get-csrf-token", csrfProtection, (req, res) => {
     const csrfToken = req.csrfToken();
     console.log(csrfToken)
@@ -147,28 +109,28 @@ app.use(express.json());
 app.get("/", (req, res) => {
     const protocol = req.protocol; // Will be 'http' or 'https'
     console.log('Protocol:', protocol);
-    res.send("Checking protocol" + protocol);
+    res.send("Welcome to my funeral Auto Auto " + protocol);
 })
 
 app.get("/about", (req, res) => {
-    console.log("Checking");
-    res.send("Passed");
+    console.log("It wokrs");
+    res.send("Ugh buck buck bitch whatcha about");
 })
 
 app.get("/contact", (req, res) => {
-    res.send("passed");
+    res.send("Talk to me buck buck bitch");
 })
 
 app.get("/signin", (req, res) => {
-    res.send("passed");
+    res.send("signin u lil shit ");
 })
 
 app.get("/signup", (req, res) => {
-    res.send("passed");
+    res.send("sign up boo ");
 })
 
 
-console.log("Connection successful!");
+console.log("work, u whore!");
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
