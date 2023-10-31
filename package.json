@@ -23,7 +23,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^5.8.0",
     "mongoose": "^7.5.2",
-    "nodemailer": "^6.9.5",
+    "nodemailer": "^6.9.6",
     "nodemon": "^3.0.1",
     "textflow.js": "^0.1.4",
     "update": "^0.7.4",
