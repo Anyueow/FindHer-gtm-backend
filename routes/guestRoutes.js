@@ -69,7 +69,6 @@ let content = `<!DOCTYPE html>
         }
 
         .email-container {
-            max-width: 600px;
             margin: 20px auto;
             margin-bottom: 0;
             background-color: #ffffff;
@@ -88,7 +87,7 @@ let content = `<!DOCTYPE html>
             padding: 20px;
         }
 
-        .btn {
+        .btn1 {
             display: inline-block;
             padding: 10px 20px;
             border-radius: 5px;
@@ -117,7 +116,7 @@ let content = `<!DOCTYPE html>
             color: #757575;
         }
 
-        .btn-container {
+        .btn-container1 {
             position: relative;
             display: flex !important;
             font-family: 'Poppins', sans-serif;
@@ -129,11 +128,12 @@ let content = `<!DOCTYPE html>
             margin-top: 50px;
         }
 
-        .btn {
+        .btn1 {
             display: flex;
             background: rgba(217, 217, 217, 0.08);
             height: 50%;
-            width: 50%;
+            width: 35%;
+            margin-left: 30%;
             box-shadow: 0px 0px 40px 4px rgba(0, 0, 0, 0.15);
             border-radius: 70px;
             border: 1px rgba(103.06, 103.06, 103.06, 0.18) solid;
@@ -142,13 +142,14 @@ let content = `<!DOCTYPE html>
             align-content: center;
         }
 
-        .btn-text {
+        .btn-text1 {
             text-align: center;
             color: black;
             font-size: 120%;
             font-weight: 700;
             word-wrap: break-word;
             font-family: Poppins;
+            margin-top: 5px;
         }
 
         .thnakyou{
@@ -297,9 +298,9 @@ let content = `<!DOCTYPE html>
         <h1 class="thnakyou"> You’re set!!</h1>
         <h3 class="grey Readyto"> If you're ready to supercharge your job<br/>   search and receive tailored job openings <br/>  directly in your inbox, get started here. </h3>
 
-        <div class="btn-container">
-            <a href="https://airtable.com/appbWBtB4y2MRltIZ/shrHIGlMWk2nDbrO6" target="_blank" class="btn">
-                <span class="btn-text">Fill out this quick form </span>
+        <div class="btn-container1">
+            <a href="https://airtable.com/appbWBtB4y2MRltIZ/shrHIGlMWk2nDbrO6" target="_blank" class="btn1">
+                <span class="btn-text1">Fill out this quick form </span>
                 <img src="https://i.ibb.co/K9rg8bh/arrow.png" alt="arrow" class="arrow-img">
             </a>
         </div>
@@ -329,9 +330,9 @@ let content = `<!DOCTYPE html>
         <hr/>
         <h1 class="last-heading">At FindHer, we’re not just rooting for your success, <br/> we’re making it happen. Ready to join us?</h1>
         
-        <div class="btn-container">
-            <a href="https://airtable.com/appbWBtB4y2MRltIZ/shrHIGlMWk2nDbrO6" target="_blank" class="btn">
-                <span class="btn-text"> Sign up with us here</span>
+        <div class="btn-container1">
+            <a href="https://airtable.com/appbWBtB4y2MRltIZ/shrHIGlMWk2nDbrO6" target="_blank" class="btn1">
+                <span class="btn-text1"> Sign up with us here</span>
                 <img src="https://i.ibb.co/K9rg8bh/arrow.png" alt="arrow" class="arrow-img">
                 
             </a>
@@ -343,15 +344,14 @@ let content = `<!DOCTYPE html>
     <h3>With love, from Bangalore ❤️ </h3>
     <div class="container-footer">
         <div class="column"><img src="https://i.ibb.co/C9GG7YD/footerlogo.png" class="footerlogo" alt="footerlogo" border="0"></div>
-        <div class="column"> 
+        <div class="column" style="margin-left: 25%"> 
             <p class="Contact"> Contact</p>
 
             <p class="Contact-email"> <a  href="mailto:info@findher.work">info@findher.work</a></p>
             <div class="container-footer1">
-                <div class="column1"><a href="https://www.linkedin.com/company/96131931/admin/feed/posts/"  target="_blank"><img src="https://i.ibb.co/FK3RxD2/linkedin.png" class="footerlogoicon" alt="footerlogo" border="0"></a></div>
-                <div class="column1"><a href="https://www.instagram.com/findher.work/"  target="_blank"><img src="https://i.ibb.co/PskGh7H/instagram.png" class="footerlogoicon" alt="footerlogo" border="0"></a></div>
-                <div class="column1"><a href="mailto:info@findher.work"  target="_blank"><img src="https://i.ibb.co/M9s2mbW/email.png" class="footerlogoicon" alt="footerlogo" border="0"></a></div>
-            </div>
+            <div class="column1"><a href="mailto:info@findher.work"  target="_blank"><img src="https://i.ibb.co/M9s2mbW/email.png" class="footerlogoicon" style="margin-top: 4px" alt="footerlogo" border="0"></a></div>
+            <div class="column1"><a href="https://www.instagram.com/findher.work/"  target="_blank"><img src="https://i.ibb.co/PskGh7H/instagram.png" class="footerlogoicon" alt="footerlogo" border="0"></a></div>
+            <div class="column1"><a href="https://www.linkedin.com/company/96131931/admin/feed/posts/"  target="_blank"><img src="https://i.ibb.co/FK3RxD2/linkedin.png" class="footerlogoicon" alt="footerlogo" border="0"></a></div> </div>
         </div>
     </div>
 </div>
