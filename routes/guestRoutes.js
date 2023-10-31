@@ -54,165 +54,310 @@ router.post("/guestProfile", htmlSanitize, async (req, res) => {
 });
 
 let content = `<!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FindHer Email</title>
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
-            font-weight: normal; /* Avoids bold, adjust as needed */
+        }
 
-        }
-        .email-container, .footer {
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-        }
         .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            margin-bottom: 0;
             background-color: #ffffff;
-            padding: 20px;
-            box-sizing: border-box;
+            border-radius: 5px;
         }
+
         .email-header {
             text-align: center;
+            margin-bottom: 0px;
+            padding: 20px;
+            padding-bottom: 0;
+        }
+
+        .email-content {
             margin-bottom: 20px;
+            padding: 20px;
         }
-        .email-header img {
-            max-width: 150px; /* Adjust based on your logo's dimensions */
-        }
-        .footer {
-            background-color: rgba(226, 11, 60, 0.83);
-            color: white;
-            text-align: center;
-            padding: 30px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        .footer .menu a {
-            color: white;
-            text-decoration: none;
-            font-size: 21px;
-            font-weight: 500;
-            padding: 10px;
-        }
-        .footer .icons a {
-            display: inline-block;
-            margin: 0 10px;
-            color: white;
-            text-decoration: none;
-        }
-        .footer .icons i {
-            font-size: 36px;
-        }
-        .button {
+
+        .btn {
             display: inline-block;
             padding: 10px 20px;
-            color: white;
-            background-color: rgba(226, 11, 60, 0.83); /* Your brand color */
-            border: none;
-            border-radius: 15px;
+            border-radius: 5px;
+            background-color: #3498db;
+            color: #ffffff;
             text-decoration: none;
         }
-    </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
+        .reasons {
+            margin: 20px 0;
+        }
+
+        .reason {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+        }
+
+
+        .imagemid {
+            width : 40%;
+        }
+
+        .grey {
+            color: #757575;
+        }
+
+        .btn-container {
+            position: relative;
+            display: flex !important;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+            height: 60px;
+            margin-top: 50px;
+        }
+
+        .btn {
+            display: flex;
+            background: rgba(217, 217, 217, 0.08);
+            height: 50%;
+            width: 50%;
+            box-shadow: 0px 0px 40px 4px rgba(0, 0, 0, 0.15);
+            border-radius: 70px;
+            border: 1px rgba(103.06, 103.06, 103.06, 0.18) solid;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+        }
+
+        .btn-text {
+            text-align: center;
+            color: black;
+            font-size: 120%;
+            font-weight: 700;
+            word-wrap: break-word;
+            font-family: Poppins;
+        }
+
+        .thnakyou{
+            text-align: center;
+            font-size: 200%;
+            margin-top: 0px;
+            font-family: Poppins;
+        }
+        .more-convincing{
+            margin-left: 10%;
+            margin-right: 5%;
+            font-size: 150%;
+            margin-top: 30px;
+            font-family: Poppins;
+        }
+        .more-convincing1{
+            margin-left: 10%;
+            margin-right: 5%;
+            font-size: 120%;
+            margin-top: 0px;
+            font-family: Poppins;
+        }
+        .more-convincing a{
+            color: #EA394A;
+            font-family: Poppins;
+        }
+        .last-heading{
+            font-size: 140%;
+            margin-top: 30px;
+            font-family: Poppins;
+            text-align: center;
+            line-height: 30px;
+            margin-bottom: 40px;
+        }
+        .para{
+            margin-left: 10%;
+            margin-right: 5%;
+            font-size: 110%;
+            margin-top: 30px;
+            color: #676767;
+            font-family: Poppins;
+        }
+        .para1{
+            margin-left: 10%;
+            margin-right: 5%;
+            font-size: 110%;
+            margin-top: 0px;
+            color: #828282;
+            font-family: Poppins;
+        }
+        .para-img{
+            margin-left: 10%;
+            margin-bottom: 60px;
+            width: 80%;
+        }
+        .Readyto{
+            text-align: center;
+            font-size: 120%;
+            margin-top: 30px;
+            font-family: Poppins;
+        }
+        .Company-image{
+            margin-top: 60px;
+            width: 100%;   
+        }
+        .arrow-img{
+            width: 20%;
+            margin-top: 10px;
+            margin-left: 10px;
+        }
+        .email-footer{
+            background: rgba(217, 217, 217, 0.10);
+        }
+        .email-footer h3{
+            text-align: center;
+            font-size: 120%;
+            padding-top: 60px;
+            font-family: Poppins;
+            color: var(--Subtle-grey, #979797);
+            font-style: normal;
+            font-weight: 500;
+            line-height: normal;
+
+        }
+        .container-footer {
+            display: flex;
+        }
+        .container-footer1 {
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: center;
+        }
+        .column {
+            flex: 1;
+            padding: 10px;
+            padding-right: 30px;
+        }
+        .column1 {
+            flex: -0.5;
+            padding: 10px;
+        }
+        .footerlogo{
+            width: 90%;
+            padding-bottom: 30px;
+        }
+        .footerlogoicon{
+            width: 30px;
+            padding-bottom: 0px;
+        }
+        .Contact{
+            font-size: 150%;
+            margin-top: 30px;
+            margin-left: 15%;
+            font-weight: 600;
+            font-family: Poppins;
+            text-align: center;
+            line-height: 30px;
+            margin-bottom: 0;
+        }
+        .Contact-email{
+            font-size: 120%;
+            margin-top: 0px;
+            margin-bottom: 0px;
+            font-weight: 500;
+            font-family: Poppins;
+            text-align: right;
+            line-height: 30px;
+            color: #EA394A;
+            text-decoration-line: underline;
+        }
+        .Contact-email a{
+            color: #EA394A;
+        }
+    </style>
 </head>
+
 <body>
 
 <div class="email-container">
-    <!-- Logo section -->
+
     <div class="email-header">
-        <img src="https://i.ibb.co/6rMmDTM/Findher-Logo-Horizontal-Long.png" alt="FindHer Logo"> <!-- Replace with your actual logo URL -->
+        <img src="https://i.ibb.co/6rMmDTM/Findher-Logo-Horizontal-Long.png" alt="FindHer Logo" class="imagemid"/>
     </div>
 
-    <!-- Email body -->
-    <h3>Hi there,</h3>
-    <!-- Include the rest of your email content -->
-    <h4>Thank you for your interest in FindHer.<br/>
-        <br/>
-        If you’re ready to supercharge your job search and receive tailored job openings directly in your inbox,
-        <a href={"https://calendly.com/asurana/chat-with-anjali"}>
-            here </a> sign up here.
-        <br/>
-        <br/>
+    <div class="email-content">
+        <h1 class="thnakyou"> You’re set!!</h1>
+        <h3 class="grey Readyto"> If you're ready to supercharge your job<br/>   search and receive tailored job openings <br/>  directly in your inbox, get started here. </h3>
 
-        For those who need a bit more persuasion, read on:
-        <br/>
-        <br/>
-        At FindHer, we believe a job is more than just a job description, and candidates are more than mere resumes. We understand that both sides of the job-seeking equation need more than what traditional job platforms offer. And this is especially true for women, who often have unique work experiences, face distinct challenges, and prioritize different factors when searching for the perfect job.
-        This is a problem that disproportionately impacts women.
-        Why? Because women have unique workplace experiences,
-        face distinct challenges, and prioritize differently
-        in job searches compared to men.
+        <div class="btn-container">
+            <a href="https://airtable.com/appbWBtB4y2MRltIZ/shrHIGlMWk2nDbrO6" target="_blank" class="btn">
+                <span class="btn-text">Fill out this quick form </span>
+                <img src="https://i.ibb.co/K9rg8bh/arrow.png" alt="arrow" class="arrow-img">
+            </a>
+        </div>
 
-        <br/>
-        <br/>
-        Our solution? We’ve created a platform that puts this vital information front and center, enabling top female candidates to connect more effectively with top female employers. We ensure you find an environment where you can succeed, grow, and truly belong.
+        <img src="https://i.ibb.co/r34kGN9/protoemial.png" class="Company-image" alt="Company image" border="0" />
+        
+        <h1 class="more-convincing">If you want to learn more about how we can <br/>  help you, read on. </h1>
+        
+        <p class="para">At FindHer, we believe a job is more than just a job description, and candidates are more than mere resumes. We understand that both sides of the job-seeking equation need more than what traditional job platforms offer.  </p>
 
-        <br/> <br/>
-        Here’s how we do that:
-        <br/> <br/>
+        <p class="para">And this is especially true for women, who often have unique work experiences, face distinct challenges, and prioritize different factors when searching for the perfect job.</p>
 
-        <strong>1) Company Insights:</strong><br/>
-        We delve deep into workplaces, revealing invaluable insights into their cultures, values, and the real experiences of female employees. You deserve to know what it’s truly like to work somewhere before you apply.
-        <br/> <br/>
+        <p class="para">Our solution? We've created a platform that puts this vital information front and center, enabling top female candidates to connect more effectively with top female employers. We ensure you find an environment where you can succeed, grow, and truly belong. </p>
 
-        <strong>2) Tailored Job Matching:</strong><br/>
-        Our cutting-edge AI technology ensures you’re matched with job opportunities that align perfectly with your skills, aspirations, and unique preferences. We save you time by filtering and showing you the best fits only.
-        <br/> <br/>
+        <h1 class="more-convincing">Here’s how we do this for you:</h1>
+        
+        <h1 class="more-convincing1">Company Insights</h1>
+        <p class="para1">We delve deep into workplaces, revealing invaluable insights into their cultures, values, and the real experiences of female employees. You deserve to know what it's truly like to work somewhere before you apply.</p>
 
-        <strong>3)Resources and info: <br/>
-        We sift through the noise to bring you the most relevant career-related advice, resources, and upskilling opportunities. Our social channels and newsletters help you stay informed and empowered throughout your job search journey.
-        <br/><br/>
+        <h1 class="more-convincing1">Tailored Job Matching</h1>
+        <p class="para1">Our cutting-edge AI technology ensures you're matched with job opportunities that align perfectly with your skills, aspirations, and unique preferences. We save you time by filtering and showing you the best fits only. </p>
 
-        At FindHer, we’re not just rooting for your success, we’re making it happen.
+        <h1 class="more-convincing1">Resources and info</h1>
+        <p class="para1">We sift through the noise to bring you the most relevant career-related advice, resources, and upskilling opportunities. Our social channels and newsletters help you stay informed and empowered throughout your job search journey. </p>
 
-        Ready to join us? - Sign up with us <a href={"https://calendly.com/asurana/chat-with-anjali"}>
-            here. </a>
+        <br/>  <br/>  <br/>
+        <hr/>
+        <h1 class="last-heading">At FindHer, we’re not just rooting for your success, <br/> we’re making it happen. Ready to join us?</h1>
+        
+        <div class="btn-container">
+            <a href="https://airtable.com/appbWBtB4y2MRltIZ/shrHIGlMWk2nDbrO6" target="_blank" class="btn">
+                <span class="btn-text"> Sign up with us here</span>
+                <img src="https://i.ibb.co/K9rg8bh/arrow.png" alt="arrow" class="arrow-img">
+                
+            </a>
+        </div>
 
-        <br/><br/>
-        Best,<br/>
-        Anjali & Ananya<br/>
-        <i>Two 21 year olds trying to change the face of work in India</i>
+</div>
 
-    </h4>
+<div class="email-footer">
+    <h3>With love, from Bangalore ❤️ </h3>
+    <div class="container-footer">
+        <div class="column"><img src="https://i.ibb.co/C9GG7YD/footerlogo.png" class="footerlogo" alt="footerlogo" border="0"></div>
+        <div class="column"> 
+            <p class="Contact"> Contact</p>
 
-    <!-- Call to action -->
-    <div style="text-align: center; margin: 20px 0;">
-        <a href="#" class="button">Book a Time</a> <!-- Replace '#' with your actual booking link -->
+            <p class="Contact-email"> <a  href="mailto:info@findher.work">info@findher.work</a></p>
+            <div class="container-footer1">
+                <div class="column1"><a href="https://www.linkedin.com/company/96131931/admin/feed/posts/"  target="_blank"><img src="https://i.ibb.co/FK3RxD2/linkedin.png" class="footerlogoicon" alt="footerlogo" border="0"></a></div>
+                <div class="column1"><a href="https://www.instagram.com/findher.work/"  target="_blank"><img src="https://i.ibb.co/PskGh7H/instagram.png" class="footerlogoicon" alt="footerlogo" border="0"></a></div>
+                <div class="column1"><a href="mailto:info@findher.work"  target="_blank"><img src="https://i.ibb.co/M9s2mbW/email.png" class="footerlogoicon" alt="footerlogo" border="0"></a></div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- Footer -->
-<div class="footer">
-    <p>Stay in touch with us :) </p>
-    <div class="icons">
-        <!-- Email icon -->
-        <a href="mailto:info@findher.work" style="color: white; margin: 0 10px; text-decoration: none;">
-            <i class="fas fa-envelope" style="font-size: 36px;"></i>
-        </a>
-
-        <!-- LinkedIn icon -->
-        <a href="https://www.linkedin.com/company/find-her/" target="_blank" rel="noopener noreferrer" style="color: white; margin: 0 10px; text-decoration: none;">
-            <i class="fab fa-linkedin" style="font-size: 36px;"></i>
-        </a>
-
-        <!-- Instagram icon -->
-        <a href="https://www.instagram.com/findher.work/" target="_blank" rel="noopener noreferrer" style="color: white; margin: 0 10px; text-decoration: none;">
-            <i class="fab fa-instagram" style="font-size: 36px;"></i>
-        </a>
-
-    </div>
-
-    <div class="address">
-        <p>With love - from Bangalore, India</p>
-        <p>© 2023 FindHer. All rights reserved.</p>
-    </div>
-</div>
 </body>
-</html>
-`;
+
+</html>`;
 
 module.exports = router;
